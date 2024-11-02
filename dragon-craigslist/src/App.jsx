@@ -1,34 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAcademic, setIsAcademic] = useState(null);
+  const [institutionName, setInstitutionName] = useState(null);
+
+  const checkAcademicEmail = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:3001/api/check-academic-email?email=qb42@drexel.edu"
+      );
+      const data = await response.json();
+
+      setIsAcademic(data.isAcademic);
+      setInstitutionName(data.institutionName);
+      console.log("Is Academic Email:", data.isAcademic);
+      console.log("Institution Name:", data.institutionName);
+    } catch (error) {
+      console.error("Error verifying email:", error);
+    }
+  };
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+      <h1>Dragon-Craigslist Coming Soon</h1>
+      <button onClick={checkAcademicEmail}>Check Academic Email</button>
+      {isAcademic !== null && (
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+          {isAcademic
+            ? `This is an academic email from ${institutionName}.`
+            : "This is not an academic email."}
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
