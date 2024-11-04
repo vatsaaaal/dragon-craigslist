@@ -1,19 +1,18 @@
-import React from  'react';
+import React, { useState } from 'react';
 import { 
     TextField, 
     Button, 
     Typography, 
     Container,
-    Checkbox,
-    FormControlLabel,
     Box,
-    Link
+    Link,
+    CircularProgress
 } from '@mui/material';
 
 
 
 function Registration() {
-    let [registerFormData, setRegisterFormData] = React.useState({
+    let [registerFormData, setRegisterFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
@@ -21,12 +20,20 @@ function Registration() {
         password: '',
         verifyPassword: ''
     })
-
+    let [isLoading, setLoading] = useState(false);
 
 
     const handleRegistrationSubmit = (event) => {
         event.preventDefault();
-        console.log("Submitted Form: ", registerFormData);
+        setLoading(true);
+
+        try {
+            console.log("Submitted Form: ", registerFormData);
+        } catch(error) {
+            console.error("Unable to register: ", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleChangeInputs = (event) => {
@@ -49,8 +56,7 @@ function Registration() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center', 
-                border: '1px solid black',
-                overflow: 'hidden' // Hide vertical and horizontal scrollbars
+                overflow: 'hidden'
             }}>
                 <Box sx={{
                     width: '50%',
@@ -75,52 +81,57 @@ function Registration() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: 'white'
+                    backgroundColor: 'white',
+                    flexDirection: 'column'
                 }}>
                     <div className='dragon-mascot' 
                         style={{
                             flexDirection: 'column', 
                             display: 'flex', 
                             alignItems: 'center',
-                            border: '1px solid black',
+                            justifyContent: 'center',
                             width: '40%'
                             }}>
                         <Box
                             component="img"
                             src="/src/assets/dragonMascot.png"
                             alt="Dragon Logo"
-                            sx={{ width: 100, height: 100 }}
+                            sx={{ width: 120, height: 120, mb: -1 }}
                         />
                         <Box
                             component="img"
                             src='/src/assets/book.jpg'
                             alt="Dragon Logo"
-                            sx={{ width: 100, height: 100 }}
+                            sx={{ width: 290, height: 110, mb: 2 }}
                         />
-
-                    
                     </div>
-
                     <div className='titles'>
                         <Typography component="h1" variant="h4" color="primary" sx={{ mb: 1 }}>
                                 Become Our New Dragon Today!
                         </Typography>
                     </div>
 
-                    <Box component='form' sx={{ width: '100%', border: '1px solid black' }} onSubmit={handleRegistrationSubmit}>
+                    <Box component='form' 
+                        sx={{ 
+                            width: '70%', 
+                            padding: '10px'
+                        }} 
+                        onSubmit={handleRegistrationSubmit}>
                         {/*First and Last Name*/}
-                        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                        <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'space-between' }}>
                             <TextField required  variant="outlined" 
                                 name="firstName" 
                                 label="First Name"  
                                 value={registerFormData.firstName}
                                 onChange={handleChangeInputs}
+                                sx={{ width: '50%' }}
                             />
                             <TextField required  variant="outlined" 
                                 name="lastName" 
                                 label="Last Name" 
                                 value={registerFormData.lastName}
                                 onChange={handleChangeInputs}
+                                sx={{ width: '50%' }}
                             />
                         </Box>
 
@@ -130,12 +141,14 @@ function Registration() {
                             label="Dragon Email"
                             value={registerFormData.email}
                             onChange={handleChangeInputs}
+                            sx={{marginBottom: '20px', borderColor: 'black'}}
                         />
                         <TextField fullWidth variant="outlined" 
                             name='phoneNumber' 
                             label="Phone Number (Optinal)" 
                             value={registerFormData.phoneNumber}
                             onChange={handleChangeInputs}
+                            sx={{marginBottom: '20px', borderColor: 'black'}}
                         />
                         <TextField 
                             fullWidth type="password" required variant='outlined' 
@@ -143,6 +156,7 @@ function Registration() {
                             label="Set Password" 
                             value={registerFormData.password}
                             onChange={handleChangeInputs}
+                            sx={{marginBottom: '20px', borderColor: 'black'}}
                         />
                         <TextField 
                             fullWidth 
@@ -153,6 +167,7 @@ function Registration() {
                             label="Verify Password" 
                             value={registerFormData.verifyPassword}
                             onChange={handleChangeInputs}
+                            sx={{marginBottom: '20px', borderColor: 'black'}}
                         />
 
 
@@ -162,8 +177,15 @@ function Registration() {
                             </Link>
                         </Box>
 
-                        <Button type='submit' fullWidth color="primary">
-                            Register
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            sx={{ py: 1.5, marginTop: '20px' }}
+                        >
+                            {isLoading ? <CircularProgress /> : 'Register'}
                         </Button>
                     </Box>
                 </Box>
