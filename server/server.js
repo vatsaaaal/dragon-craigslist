@@ -1,12 +1,23 @@
 import express from "express";
 import pkg from "pg";
 import fs from "fs";
+import { Server } from "socket.io";
+import http from "http";
 
 const { Client } = pkg;
 const app = express();
+const server = http.createServer(app);
 const PORT = 3000;
 
 app.use(express.json());
+
+const io = new Server(server, {
+    cors: {
+      origin: "http://localhost:5173", // Resolve CROS issue but not working
+      methods: ["GET", "POST"],
+      credentials: true
+    }
+  });
 
 let client;
 
@@ -192,6 +203,20 @@ app.delete("/products/:id", async (req, res) => {
         res.status(500).send("Error deleting product.");
     }
 })
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+  
+    // Listen for messages from the client
+    socket.on('message', (msg) => {
+      // Broadcast the message to all connected clients
+      io.emit('message', msg);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('A user disconnected');
+    });
+  });
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
