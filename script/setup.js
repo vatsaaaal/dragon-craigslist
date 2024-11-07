@@ -111,6 +111,50 @@ async function setupDatabase() {
       console.log('"product" table already exists');
     }
 
+    // Create message table if it doesn't exist
+    if (!existingTables.includes("message")) {
+      await client.query(`
+        CREATE TABLE message (
+          id SERIAL PRIMARY KEY,
+          content VARCHAR(255),
+          created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          user_id INTEGER REFERENCES "user"(user_id),
+          room_id INTEGER REFERENCES "room"(id)
+        );
+      `);
+      console.log('Created "message" table successfully');
+    } else {
+      console.log('"message" table already exists');
+    }
+
+    // Create room table if it doesn't exist
+    if (!existingTables.includes("room")) {
+      await client.query(`
+        CREATE TABLE room (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(20),
+          owner INTEGER REFERENCES "user"(user_id),
+        );
+      `);
+      console.log('Created "room" table successfully');
+    } else {
+      console.log('"room" table already exists');
+    }
+
+    // Create room_member table if it doesn't exist
+    if (!existingTables.includes("room_member")) {
+      await client.query(`
+        CREATE TABLE room_member (
+          room_id INTEGER REFERENCES "room"(id),
+          user_id INTEGER REFERENCES "user"(user_id),
+          PRIMARY KEY (room_id, user_id)
+        );
+      `);
+      console.log('Created "room_member" table successfully');
+    } else {
+      console.log('"room_member" table already exists');
+    }
+
     console.log("Database setup completed successfully");
   } catch (err) {
     console.error("Database setup failed:", err.message);
