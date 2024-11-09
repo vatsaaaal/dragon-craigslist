@@ -7,34 +7,72 @@ import {
     Box,
     Link,
     CircularProgress,
-    useTheme
+    useTheme,
+    Alert
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 
 function Registration() {
-    let [registerFormData, setRegisterFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        password: '',
-        verifyPassword: ''
-    })
-    let [isLoading, setLoading] = useState(false);
+  let [registerFormData, setRegisterFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    verifyPassword: "",
+  });
+  const [isLoading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
+  const handleRegistrationSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
 
-    const handleRegistrationSubmit = (event) => {
-        event.preventDefault();
-        setLoading(true);
+    const userData = {
+      username: registerFormData.email.split("@")[0],
+      password: registerFormData.password,
+      first_name: registerFormData.firstName,
+      last_name: registerFormData.lastName,
+      email: registerFormData.email,
+      school_name: "Drexel University",
+    };
 
-        try {
-            console.log("Submitted Form: ", registerFormData);
-        } catch(error) {
-            console.error("Unable to register: ", error);
-        } finally {
-            setLoading(false);
-        }
+    try {
+      const response = await fetch("http://localhost:3000/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        setSuccessMessage("User registered successfully!");
+        setRegisterFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          password: "",
+          verifyPassword: "",
+        });
+
+        // Future redirection to Login page, once it exists
+        // Uncomment this when Login page is available
+        // window.location.href = '/login';
+      } else {
+        setErrorMessage("Failed to register user. Please try again.");
+      }
+    } catch (error) {
+      console.error("Unable to register:", error);
+      setErrorMessage("An error occurred. Please try again later.");
+    } finally {
+      setLoading(false);
     }
+  };
 
     const handleChangeInputs = (event) => {
         const {name, value} = event.target;
@@ -44,7 +82,6 @@ function Registration() {
         }))
     }
     const theme = useTheme();
-
 
     return (
         <>
@@ -130,6 +167,17 @@ function Registration() {
                         padding: '10px'
                     }} 
                     onSubmit={handleRegistrationSubmit}>
+                      {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          {errorMessage && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {errorMessage}
+            </Alert>
+          )}
                     {/*First and Last Name*/}
                     <Box sx={{ display: 'flex', gap: 2, mb: 3, justifyContent: 'space-between' }}>
                         <TextField required  variant="outlined" 
