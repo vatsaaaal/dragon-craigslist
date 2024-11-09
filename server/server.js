@@ -1,12 +1,19 @@
 import express from "express";
 import pkg from "pg";
 import fs from "fs";
+import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
 const { Client } = pkg;
 const app = express();
 const PORT = 3000;
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
 app.use(express.json());
 
@@ -38,6 +45,8 @@ initializeDatabaseConnection().catch((error) => {
 // Use routes
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
+
+export { client };
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

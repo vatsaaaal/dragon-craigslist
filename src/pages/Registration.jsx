@@ -7,6 +7,7 @@ import {
   Box,
   Link,
   CircularProgress,
+  Alert,
 } from "@mui/material";
 
 function Registration() {
@@ -18,16 +19,54 @@ function Registration() {
     password: "",
     verifyPassword: "",
   });
-  let [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleRegistrationSubmit = (event) => {
+  const handleRegistrationSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    const userData = {
+      username: registerFormData.email.split("@")[0],
+      password: registerFormData.password,
+      first_name: registerFormData.firstName,
+      last_name: registerFormData.lastName,
+      email: registerFormData.email,
+      school_name: "Drexel University",
+    };
 
     try {
-      console.log("Submitted Form: ", registerFormData);
+      const response = await fetch("http://localhost:3000/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        setSuccessMessage("User registered successfully!");
+        setRegisterFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          password: "",
+          verifyPassword: "",
+        });
+
+        // Future redirection to Login page, once it exists
+        // Uncomment this when Login page is available
+        // window.location.href = '/login';
+      } else {
+        setErrorMessage("Failed to register user. Please try again.");
+      }
     } catch (error) {
-      console.error("Unable to register: ", error);
+      console.error("Unable to register:", error);
+      setErrorMessage("An error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -127,6 +166,18 @@ function Registration() {
           }}
           onSubmit={handleRegistrationSubmit}
         >
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+
+          {errorMessage && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {errorMessage}
+            </Alert>
+          )}
+
           {/*First and Last Name*/}
           <Box
             sx={{
@@ -171,7 +222,7 @@ function Registration() {
             fullWidth
             variant="outlined"
             name="phoneNumber"
-            label="Phone Number (Optinal)"
+            label="Phone Number (Optional)"
             value={registerFormData.phoneNumber}
             onChange={handleChangeInputs}
             sx={{ marginBottom: "20px", borderColor: "black" }}
