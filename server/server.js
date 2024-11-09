@@ -315,11 +315,10 @@ io.on("connection", (socket) => {
         }
   });
 
-  // Other events can be handled here, e.g., sending messages within a room
     socket.on("send_message", (data) => {
-        const { roomId, message, user } = data;
-        io.to(roomId).emit("receive_message", { user, message });
-        console.log(`Message from ${user} in room ${roomId}: ${message}`);
+        const { content, user, room_id } = data;
+        console.log("Data object received in send_message:", data);
+        socket.to(room_id).emit('receive_message', { user, content });
     });
 
     // Handle socket disconnection

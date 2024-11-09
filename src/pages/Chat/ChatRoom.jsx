@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
-  const { sender_id } = useParams();
-  const { messages = [], sendMessage = () => {} } = useChat() || {};
+  const { room_code } = useParams();
+  const { messages = [], sendMessage = () => {} } = useChat(room_code) || {};
   const [newMessage, setNewMessage] = useState('');
   
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
-      sendMessage(newMessage);
+      sendMessage(newMessage); // Send user and content
       setNewMessage('');
     }
   };
@@ -20,7 +20,7 @@ const ChatRoom = () => {
         <div className="messages">
           {messages.map((msg, index) => (
             <div key={index} className="message">
-              <strong>{msg.user}:</strong> {msg.text}
+              <strong>{msg.user}:</strong> {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
             </div>
           ))}
         </div>
