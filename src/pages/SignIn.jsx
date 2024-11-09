@@ -12,9 +12,6 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 
 
-
-
-
 export default function SignIn() {
     let [isLoading, setLoading] = useState(false);
     let [loginFormData, setLoginFormData] = useState({
@@ -46,145 +43,159 @@ export default function SignIn() {
     const theme = useTheme();
 
     return (
-        <Container
-        disableGutters
-        maxWidth={false}
-        sx={{
-            bgcolor: 'white',
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-        }}
-        >
-        <Box sx={{ width: '100%', height: '100%', display: 'flex' }}>
+        <>
+        <Box sx={{ 
+        width: '100%', 
+        height: '100%', 
+        display: 'flex',
+        overflow: 'hidden',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+        }}>
             <Box
-            sx={{
+                sx={{
                 width: '50%',
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 [theme.breakpoints.down('md')]: {
-                width: '100%',
-                height: 'auto',
+                    display: 'none', 
                 },
-            }}
+                }}
             >
-            <img
+                <img
                 src='/src/assets/drexel.jpg'
                 alt='Drexel Bridge'
                 style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
                 }}
-            />
+                />
             </Box>
 
             <Box
-            sx={{
+                sx={{
                 width: '50%',
-                height: '100%',
+                height: '100vh',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: 'white',
                 flexDirection: 'column',
                 [theme.breakpoints.down('md')]: {
-                width: '100%',
-                padding: theme.spacing(2),
-                height: 'auto',
+                    width: '100%',
+                    padding: theme.spacing(2),
                 },
-            }}
-            >
-            <div
-                className='dragon-mascot'
-                style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '40%',
-                flexDirection: 'column',
                 }}
             >
                 <Box
-                component="img"
-                src="/src/assets/dragonMascot.png"
-                alt="Dragon Logo"
-                sx={{ width: 120, height: 120, mb: -1 }}
-                />
-                <Box
-                component="img"
-                src='/src/assets/book.jpg'
-                alt="Dragon Book"
-                sx={{ width: 290, height: 110, mb: 2 }}
-                />
-            </div>
-
-            <div className='titles'>
-                <Typography component="h1" variant="h4" color="primary" sx={{ mb: 1 }}>
-                Login to your Dragon Account!
-                </Typography>
-            </div>
-
-            <Box
-                component="form"
-                sx={{ width: '70%', padding: 2 }}
-                onSubmit={handleLogInSubmit}
-            >
-                <TextField
-                fullWidth
-                required
-                variant="outlined"
-                name='email'
-                type="email"
-                label="Dragon Email"
-                value={loginFormData.email}
-                onChange={handleChangeInputs}
-                sx={{ marginBottom: 2, borderColor: 'black' }}
-                />
-                <TextField
-                fullWidth
-                required
-                variant="outlined"
-                name='password'
-                type='password'
-                label="Password"
-                value={loginFormData.password}
-                onChange={handleChangeInputs}
-                sx={{ marginBottom: 2, borderColor: 'black' }}
-                />
-
-                <Box sx={{ marginBottom: 2 }}>
-                <Link href="/" variant="body2" color="primary">
-                    Forgot Password?
-                </Link>
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    width: '100%',
+                    maxWidth: '440px', // Limit form width
+                    padding: '0 20px',
+                }}
+                >
+                {/* Dragon Mascot */}
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    mb: 4
+                }}>
+                    <Box
+                    component="img"
+                    src="/src/assets/dragonMascot.png"
+                    alt="Dragon Logo"
+                    sx={{ width: 120, height: 120, mb: -1 }}
+                    />
+                    <Box
+                    component="img"
+                    src='/src/assets/book.jpg'
+                    alt="Dragon Book"
+                    sx={{ width: 290, height: 110, mb: 2 }}
+                    />
                 </Box>
 
-                <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                size="large"
-                sx={{ py: 1.5, marginTop: 2 }}
+                {/* Title */}
+                <Typography 
+                    component="h1" 
+                    variant="h4" 
+                    color="primary" 
+                    sx={{ mb: 4, textAlign: 'center' }}
                 >
-                {isLoading ? <CircularProgress /> : 'LogIn'}
-                </Button>
-            </Box>
-            <Box>
-                <Typography>
-                    Need Dragon Account?
-                    <Link component={RouterLink} to='/register' color='primary'>
+                    Login to your Dragon Account!
+                </Typography>
+
+                {/* Form */}
+                <Box
+                    component="form"
+                    sx={{ width: '100%' }}
+                    onSubmit={handleLogInSubmit}
+                >
+                    <TextField
+                    fullWidth
+                    required
+                    variant="outlined"
+                    name='email'
+                    type="email"
+                    label="Dragon Email"
+                    value={loginFormData.email}
+                    onChange={handleChangeInputs}
+                    sx={{ mb: 2 }}
+                    />
+                    <TextField
+                    fullWidth
+                    required
+                    variant="outlined"
+                    name='password'
+                    type='password'
+                    label="Password"
+                    value={loginFormData.password}
+                    onChange={handleChangeInputs}
+                    sx={{ mb: 2 }}
+                    />
+
+                    <Box sx={{ mb: 2 }}>
+                    <Link href="/" variant="body2" color="primary">
+                        Forgot Password?
+                    </Link>
+                    </Box>
+
+                    <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    sx={{ py: 1.5, mb: 3 }}
+                    >
+                    {isLoading ? <CircularProgress size={24} /> : 'LOGIN'}
+                    </Button>
+
+                    <Typography align="center">
+                    Need Dragon Account?{' '}
+                    <Link 
+                        component={RouterLink} 
+                        to='/register' 
+                        color='primary'
+                        sx={{ ml: 1 }}
+                    >
                         SIGN UP
                     </Link>
-                </Typography>
-            </Box>
+                    </Typography>
+                </Box>
+                </Box>
             </Box>
         </Box>
-        </Container>
-    );
+        </>
+    )
 }
