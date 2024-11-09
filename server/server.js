@@ -220,6 +220,24 @@ app.delete("/products/:id", async (req, res) => {
     }
 })
 
+// Get all messages
+app.get('/messages', async (req, res) => {
+    try {
+        const result = await client.query(
+          'SELECT * FROM message ORDER BY created ASC',
+        );
+    
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: "No messages found for this user." });
+        }
+    
+        res.json(result.rows[1]);
+      } catch (error) {
+        console.error('Error retrieving messages:', error);
+        res.status(500).send('Error retrieving messages');
+      }
+  });
+
 app.get('/messages/:user_id', async (req, res) => {
     const { user_id } = req.params;
   
@@ -290,21 +308,23 @@ io.on("connection", (socket) => {
     console.log(`User connected: ${socket.id}`);
 
   // Listen for the 'join_room' event from the client
-  socket.on("join_room", (roomId) => {
-    socket.join(roomId); // Add the client to the specified room
-    console.log(`User ${socket.id} joined room: ${roomId}`);
+    socket.on('join_room', (room) => {
+        if (room) {
+        socket.join(room);
+        console.log(`User ${socket.id} joined room: ${room}`);
+        }
   });
 
   // Other events can be handled here, e.g., sending messages within a room
-  socket.on("send_message", (data) => {
-    const { roomId, message, user } = data;
-    io.to(roomId).emit("receive_message", { user, message });
-    console.log(`Message from ${user} in room ${roomId}: ${message}`);
-  });
+    socket.on("send_message", (data) => {
+        const { roomId, message, user } = data;
+        io.to(roomId).emit("receive_message", { user, message });
+        console.log(`Message from ${user} in room ${roomId}: ${message}`);
+    });
 
-  // Handle socket disconnection
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
+    // Handle socket disconnection
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
   });
 });
   
