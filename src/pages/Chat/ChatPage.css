@@ -46,10 +46,13 @@
   }
   
   .chat-container {
-    display: flex;
-    justify-content: right;
-    align-items: center;
-    width: 100vw;
+    position: fixed;
+    top: 0;
+    right: 0;
     height: 100vh;
-    background-color: #f3f4f6;
+    width: 30vw;
+    justify-content: right;
+    align-items: right;
+    background-color: #d9dbdf;
+    padding-right: 20px
   }
