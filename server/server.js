@@ -1,23 +1,24 @@
 import express from "express";
 import pkg from "pg";
 import fs from "fs";
-import { Server } from "socket.io";
 import http from "http";
+import { Server as SocketIOServer } from 'socket.io';
+
 
 const { Client } = pkg;
 const app = express();
 const server = http.createServer(app);
 const PORT = 3000;
 
-app.use(express.json());
-
-const io = new Server(server, {
+const io = new SocketIOServer(server, {
     cors: {
-      origin: "http://localhost:5173", // Resolve CROS issue but not working
+      origin: "http://localhost:5173",
       methods: ["GET", "POST"],
       credentials: true
     }
   });
+
+app.use(express.json());
 
 let client;
 
@@ -204,19 +205,42 @@ app.delete("/products/:id", async (req, res) => {
     }
 })
 
+// Get all messages based on 
+app.get('/messages/:product_id:user_id', async (req, res) => {
+  const { product_id, user_id } = req.params;
+
+  try {
+    const result = await pool.query(
+      'SELECT id, content, created, user_id FROM message WHERE product_id = $1 AND user_id = $2 ORDER BY created ASC',
+      [product_id, user_id]
+    );
+
+    if (result.rows.length === 0) {
+        // No messages found, send a 404 error response
+        return res.status(404).json({ error: "No messages found for this product." });
+      }
+
+    res.json(result.rows); // Send messages as JSON
+  } catch (error) {
+    console.error('Error retrieving messages:', error);
+    res.status(500).send('Error retrieving messages');
+  }
+});
+
 io.on('connection', (socket) => {
-    console.log('A user connected');
+    console.log(`User connected: ${socket.id}`);
   
-    // Listen for messages from the client
-    socket.on('message', (msg) => {
-      // Broadcast the message to all connected clients
-      io.emit('message', msg);
+    // Listen for join_room event
+    socket.on('join_room', (roomId) => {
+      socket.join(roomId);
+      console.log(`User ${socket.id} joined room: ${roomId}`);
     });
   
     socket.on('disconnect', () => {
-      console.log('A user disconnected');
+      console.log(`User disconnected: ${socket.id}`);
     });
   });
+  
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
   const { messages, sendMessage } = useChat();
   const [newMessage, setNewMessage] = useState('');
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    // Scroll to the bottom when a new message is added
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
+  
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
       sendMessage(newMessage);
+      setNewMessage(''); // Clear the input field after sending
     }
   };
 
@@ -25,7 +20,6 @@ const ChatRoom = () => {
             <strong>{msg.user}:</strong> {msg.text}
           </div>
         ))}
-        <div ref={messagesEndRef} />
       </div>
       <div className="message-input">
         <input
