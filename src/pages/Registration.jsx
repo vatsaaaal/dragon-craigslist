@@ -6,8 +6,9 @@ import {
     Container,
     Box,
     Link,
-    CircularProgress
+    CircularProgress,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 
 
@@ -188,7 +189,17 @@ function Registration() {
                             {isLoading ? <CircularProgress /> : 'Register'}
                         </Button>
                     </Box>
+
+                    <Box>
+                        <Typography>
+                            Already have an account? 
+                            <Link component={RouterLink} to='/login' color='primary'>
+                                LOG IN
+                            </Link>
+                        </Typography>
+                    </Box>
                 </Box>
+
         </Container>
     );
 }
