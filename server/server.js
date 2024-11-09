@@ -10,17 +10,14 @@ const app = express();
 const server = http.createServer(app);
 const PORT = 3000;
 
-const io = new SocketIOServer(server, {
-    cors: {
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST"],
-      credentials: true
-    }
-  });
-
 app.use(express.json());
 
 let client;
+let rooms = {};
+
+function generateRoomCode(sender_id, receiver_id, product_id) {
+
+}
 
 async function loadConfig() {
     const envConfig = JSON.parse(fs.readFileSync("env.json", "utf-8"));
@@ -205,40 +202,40 @@ app.delete("/products/:id", async (req, res) => {
     }
 })
 
-// Get all messages based on 
-app.get('/messages/:product_id:user_id', async (req, res) => {
-  const { product_id, user_id } = req.params;
-
-  try {
-    const result = await pool.query(
-      'SELECT id, content, created, user_id FROM message WHERE product_id = $1 AND user_id = $2 ORDER BY created ASC',
-      [product_id, user_id]
-    );
-
-    if (result.rows.length === 0) {
-        // No messages found, send a 404 error response
-        return res.status(404).json({ error: "No messages found for this product." });
+app.get('/messages/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+  
+    try {
+      const result = await client.query(
+        'SELECT sender_id, content FROM message WHERE sender_id = $1 OR receiver_id = $1 ORDER BY created ASC',
+        [user_id]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "No messages found for this user." });
       }
-
-    res.json(result.rows); // Send messages as JSON
-  } catch (error) {
-    console.error('Error retrieving messages:', error);
-    res.status(500).send('Error retrieving messages');
-  }
-});
-
-io.on('connection', (socket) => {
-    console.log(`User connected: ${socket.id}`);
   
-    // Listen for join_room event
-    socket.on('join_room', (roomId) => {
-      socket.join(roomId);
-      console.log(`User ${socket.id} joined room: ${roomId}`);
-    });
+      res.json(result.rows[1]);
+    } catch (error) {
+      console.error('Error retrieving messages:', error);
+      res.status(500).send('Error retrieving messages');
+    }
+  });
   
-    socket.on('disconnect', () => {
-      console.log(`User disconnected: ${socket.id}`);
-    });
+
+// Create a new message
+app.post('/messages', async (req, res) => {
+    const { content, sender_id, receiver_id } = req.body;
+    try {
+      const result = await client.query(
+        'INSERT INTO message (content, created, sender_id, receiver_id, read_status) VALUES ($1, NOW(), $2, $3, false) RETURNING *',
+        [content, sender_id, receiver_id]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (error) {
+      console.error('Error saving message:', error);
+      res.status(500).send('Error saving message.');
+    }
   });
   
 

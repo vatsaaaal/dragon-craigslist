@@ -118,8 +118,9 @@ async function setupDatabase() {
           id SERIAL PRIMARY KEY,
           content VARCHAR(255),
           created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          user_id INTEGER REFERENCES "user"(user_id),
-          product_id INTEGER REFERENCES "product"(id)
+          sender_id INTEGER REFERENCES "user"(user_id),
+          receiver_id INTEGER REFERENCES "user"(user_id),
+          read_status BOOLEAN DEFAULT FALSE
         );
       `);
       console.log('Created "message" table successfully');
