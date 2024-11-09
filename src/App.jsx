@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/chat/product_id" element={<ChatRoom />} />
-        <Route path="/chatbox" element={<ChatRoom />} />
+        <Route path="/chatbox/:sender_id" element={<ChatRoom />} />
       </Routes>
     </Router>
   );

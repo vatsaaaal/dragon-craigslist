@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
+  const { sender_id } = useParams();
   const { messages = [], sendMessage = () => {} } = useChat() || {};
   const [newMessage, setNewMessage] = useState('');
   
