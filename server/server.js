@@ -318,7 +318,7 @@ io.on("connection", (socket) => {
     socket.on("send_message", (data) => {
         const { content, user, room_id } = data;
         console.log("Data object received in send_message:", data);
-        socket.to(room_id).emit('receive_message', { user, content });
+        io.in(room_id).emit('receive_message', { user, content });
     });
 
     // Handle socket disconnection
