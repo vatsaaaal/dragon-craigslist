@@ -58,7 +58,7 @@ async function setupDatabase() {
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = 'public' 
-                AND table_name IN ('user', 'product');
+                AND table_name IN ('user', 'product', 'message');
         `;
 
     const res = await client.query(checkTablesQuery);
@@ -109,6 +109,23 @@ async function setupDatabase() {
       console.log('Created "product" table successfully');
     } else {
       console.log('"product" table already exists');
+    }
+
+    // Create message table if it doesn't exist
+    if (!existingTables.includes("message")) {
+      await client.query(`
+        CREATE TABLE message (
+          id SERIAL PRIMARY KEY,
+          content VARCHAR(255),
+          created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          sender_id INTEGER REFERENCES "user"(user_id),
+          receiver_id INTEGER REFERENCES "user"(user_id),
+          read_status BOOLEAN DEFAULT FALSE
+        );
+      `);
+      console.log('Created "message" table successfully');
+    } else {
+      console.log('"message" table already exists');
     }
 
     console.log("Database setup completed successfully");
