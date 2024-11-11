@@ -49,7 +49,11 @@ function Registration() {
         body: JSON.stringify(userData),
       });
 
+      console.log("response: ", response);
+
+      
       if (response.ok) {
+        setLoading(false);
         setSuccessMessage("User registered successfully!");
         setRegisterFormData({
           firstName: "",
