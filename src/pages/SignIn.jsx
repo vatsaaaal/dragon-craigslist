@@ -120,7 +120,7 @@ export default function SignIn() {
               justifyContent: "center",
               flexDirection: "column",
               width: "100%",
-              maxWidth: "440px", // Limit form width
+              maxWidth: "440px", 
               padding: "0 20px",
             }}
           >
