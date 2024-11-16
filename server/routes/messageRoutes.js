@@ -101,4 +101,21 @@ router.put("/edit/:message_id", async (req, res) => {
   }
 });
 
+// Get messages between 2 client sender and retriever
+router.get("/:sender_id/:receiver_id", async (req, res) => {
+  const { sender_id, receiver_id } = req.params;
+
+  try {
+    const result = await client.query(
+      "SELECT * FROM message WHERE (sender_id = $1 AND receiver_id = $2) OR  (sender_id = $2 AND receiver_id = $1) ORDER BY created ASC;",
+      [sender_id, receiver_id]
+    );
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error loading message:", error);
+    res.status(500).send("Error loading message.");
+  }
+});
+
 export default router;
