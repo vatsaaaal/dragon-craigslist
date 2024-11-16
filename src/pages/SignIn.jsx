@@ -10,7 +10,7 @@ import {
   useTheme,
   Alert,
 } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
   let [isLoading, setLoading] = useState(false);
@@ -19,6 +19,7 @@ export default function SignIn() {
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChangeInputs = (event) => {
     const { name, value } = event.target;
@@ -44,7 +45,8 @@ export default function SignIn() {
       });
 
       if (response.ok) {
-        window.location.href = "/";
+        localStorage.setItem("isLoggedIn", "true");
+        navigate("/");
       } else {
         setErrorMessage("Invalid email or password. Please try again.");
       }

@@ -54,6 +54,23 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Authentication check
+router.get('/auth-check', (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ loggedIn: false, message: 'Not authenticated' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.status(200).json({ loggedIn: true, userId: decoded.userId });
+  } catch (error) {
+    console.error("Failed to authenticate:", error);
+    res.status(401).json({ loggedIn: false, message: 'Invalid token' });
+  }
+});
+
 // Get all users
 router.get("/", async (req, res) => {
   try {
@@ -84,7 +101,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a user by ID
-router.put("/:id", async (req, res) => {
+router.put("/:id",  async (req, res) => {
   const { id } = req.params;
   const { username, password, first_name, last_name, email, school_name } =
     req.body;
