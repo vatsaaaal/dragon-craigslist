@@ -1,9 +1,12 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import { client } from "../server.js";
+import { config } from "../config.js";
 
 const router = express.Router();
+const JWT_SECRET = config.JWT_SECRET;
 
-// Create a new user
+// Create a new user (Registration)
 router.post("/", async (req, res) => {
   const { username, password, first_name, last_name, email, school_name } =
     req.body;
@@ -17,6 +20,54 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).send("Error creating user.");
+  }
+});
+
+// Login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const result = await client.query(
+      'SELECT * FROM "user" WHERE email = $1 AND password = $2;',
+      [email, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).send("Invalid email or password.");
+    }
+
+    const user = result.rows[0];
+    const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 3600000,
+    });
+    res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Error logging in:", error);
+    res.status(500).send("Error logging in.");
+  }
+});
+
+// Authentication check
+router.get('/auth-check', (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ loggedIn: false, message: 'Not authenticated' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.status(200).json({ loggedIn: true, userId: decoded.userId });
+  } catch (error) {
+    console.error("Failed to authenticate:", error);
+    res.status(401).json({ loggedIn: false, message: 'Invalid token' });
   }
 });
 
@@ -50,7 +101,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // Update a user by ID
-router.put("/:id", async (req, res) => {
+router.put("/:id",  async (req, res) => {
   const { id } = req.params;
   const { username, password, first_name, last_name, email, school_name } =
     req.body;
