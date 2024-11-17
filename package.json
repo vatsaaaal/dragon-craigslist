@@ -16,7 +16,11 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
+<<<<<<< HEAD
     "@mui/x-charts": "^7.22.2",
+=======
+    "axios": "^1.7.7",
+>>>>>>> main
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "jsonwebtoken": "^9.0.2",

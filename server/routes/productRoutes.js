@@ -42,9 +42,13 @@ router.post("/products", async (req, res) => {
 });
 
 // Get all products
-router.get("/products", async (req, res) => {
+router.get("/all-books", async (req, res) => {
   try {
-    const result = await client.query(`SELECT * FROM product;`);
+    const result = await client.query(`
+      SELECT title, author, price, book_image_url, id
+      FROM product;
+    `);
+    console.log(result.rows);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching products:", error);
