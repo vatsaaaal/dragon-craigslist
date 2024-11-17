@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-    TextField, 
     Button, 
     Typography, 
     Container,
@@ -15,8 +14,8 @@ export default function LandingPage() {
         <Box sx={{ 
             minHeight: '100vh',
             position: 'relative',
-            overflow: 'hidden',
             width: '100%',
+            overflow: 'hidden'
         }}>
             <PageHeader />
             <Box sx={{ mt: 15}}>
