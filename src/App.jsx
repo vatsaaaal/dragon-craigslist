@@ -7,6 +7,7 @@ import ChatRoom from './pages/Chat/ChatRoom';
 import Registration from './pages/Registration';
 import SignIn from './pages/SignIn';
 import LandingPage from './pages/Landing';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/chatbox/:sender_id" element={<ChatRoom />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<SignIn />} />
+        <Route path="admin/dashboard" element={<AdminDashboard />} />
         <Route path="/" element={<LandingPage />} />
       </Routes>
     </Router>
