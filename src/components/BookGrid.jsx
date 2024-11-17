@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 
-function BookGrid() {
+function BookGrid({ searchQuery, sortOption, filterCategory }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -18,7 +18,6 @@ function BookGrid() {
         const response = await axios.get(
           "http://localhost:3000/products/all-books"
         );
-        console.log("API Response:", response.data);
         if (Array.isArray(response.data)) {
           setBooks(response.data);
         } else {
@@ -34,11 +33,41 @@ function BookGrid() {
     fetchBooks();
   }, []);
 
+  const filteredBooks = books
+    .filter((book) => {
+      // Filter by category
+      if (filterCategory && book.category !== filterCategory) return false;
+
+      // Search by title or author
+      if (
+        searchQuery &&
+        !(
+          book.title.toLowerCase().includes(searchQuery) ||
+          book.author.toLowerCase().includes(searchQuery)
+        )
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      // Sort books
+      if (sortOption === "Price") {
+        return a.price - b.price;
+      } else if (sortOption === "Author") {
+        return a.author.localeCompare(b.author);
+      } else if (sortOption === "Title") {
+        return a.title.localeCompare(b.title);
+      }
+      return 0; // Default: no sorting
+    });
+
   return (
     <Container>
       <Grid container spacing={4}>
-        {Array.isArray(books) && books.length > 0 ? (
-          books.map((book) => (
+        {Array.isArray(filteredBooks) && filteredBooks.length > 0 ? (
+          filteredBooks.map((book) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
               <Card
                 sx={{
