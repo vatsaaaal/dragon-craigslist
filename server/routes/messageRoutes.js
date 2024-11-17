@@ -1,10 +1,11 @@
 import express from "express";
 import { client } from "../server.js";
+import getUserIdFromToken from "../middleware/getUserIdFromToken.js"; // Import the middleware
 
 const router = express.Router();
 
 // Create a new message
-router.post("/", async (req, res) => {
+router.post("/", getUserIdFromToken, async (req, res) => {
   const { content, sender_id, receiver_id } = req.body;
   try {
     const result = await client.query(
@@ -19,19 +20,18 @@ router.post("/", async (req, res) => {
 });
 
 // Get messages based on user id
-router.get("/:user_id", async (req, res) => {
-  const { user_id } = req.params;
+router.get("/past_messages", getUserIdFromToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  console.log(user_id);
 
   try {
     const result = await client.query(
-      "SELECT id, sender_id, content FROM message WHERE sender_id = $1 OR receiver_id = $1 ORDER BY created ASC",
+      "SELECT id, sender_id, receiver_id, content, created FROM message WHERE sender_id = $1 OR receiver_id = $1 ORDER BY created ASC",
       [user_id]
     );
 
     if (result.rows.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No messages found for this user." });
+      return res.status(404).json({ error: "No messages found for this user." });
     }
 
     res.json(result.rows);
