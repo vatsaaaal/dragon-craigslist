@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Container,
+  Box,
   Grid,
   Card,
   CardMedia,
@@ -36,7 +37,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
   const filteredBooks = books
     .filter((book) => {
       // Filter by category
-      if (filterCategory && book.category !== filterCategory) return false;
+      if (filterCategory && book.genre !== filterCategory) return false;
 
       // Search by title or author
       if (
@@ -112,7 +113,20 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
             </Grid>
           ))
         ) : (
-          <Typography variant="h6">No books available.</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "50vh",
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h6" color="text.secondary">
+              No books available.
+            </Typography>
+          </Box>
         )}
       </Grid>
     </Container>

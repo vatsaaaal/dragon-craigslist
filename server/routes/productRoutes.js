@@ -45,7 +45,7 @@ router.post("/products", async (req, res) => {
 router.get("/all-books", async (req, res) => {
   try {
     const result = await client.query(`
-      SELECT title, author, price, book_image_url, id
+      SELECT *
       FROM product;
     `);
     console.log(result.rows);
