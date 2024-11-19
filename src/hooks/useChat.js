@@ -22,7 +22,7 @@
     const fetchUserId = async () => {
       try {
         // Replace this URL with the endpoint on your server that verifies the token
-        const response = await axios.get('http://localhost:3000/messages/user', {
+        const response = await axios.get('http://localhost:3000/messages/past_messages', {
           withCredentials: true, // This ensures cookies are included
         });
         

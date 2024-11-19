@@ -20,6 +20,8 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 // Get messages based on user id
+// Ask question about how to test
+// Ask for help with the middleware, is that the easiest way
 router.get("/past_messages", getUserIdFromToken, async (req, res) => {
   const user_id = req.user.user_id;
   console.log(user_id);
