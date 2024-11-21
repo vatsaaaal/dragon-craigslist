@@ -3,15 +3,19 @@ import pkg from "pg";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
+import cookieParser from 'cookie-parser'; // Import cookie-parser
 import { config } from "./config.js"; // Import config here
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import { handleSendMessage } from "./handlers/messageHandler.js";
+
 
 const { Client } = pkg;
 const app = express();
 const server = http.createServer(app);
 const PORT = 3000;
+app.use(cookieParser());
 
 let io = new SocketIOServer(server, {
   cors: {
@@ -58,7 +62,7 @@ app.use("/messages", messageRoutes);
 export { client, config }; // Export client and config
 
 io.on("connection", (socket) => {
-  console.log(`User connected: ${socket.id}`);
+  console.log(`Socket created: ${socket.id}`);
 
   socket.on("join_room", (room) => {
     if (room) {
@@ -68,9 +72,17 @@ io.on("connection", (socket) => {
   });
 
   socket.on("send_message", (data) => {
-    const { content, user, room_id } = data;
-    console.log("Data object received in send_message:", data);
-    io.in(room_id).emit("receive_message", { user, content });
+    const { content, sender_id, room_id, receiver_id } = data;
+    console.log(data);
+    handleSendMessage(socket, io, client, data); 
+
+    // Check if the socket is in the correct room
+    if (!socket.rooms.has(room_id)) {
+      console.error(`User ${sender_id} attempted to send a message to a room they are not part of: ${room_id}`);
+      return;
+    }
+
+    io.in(room_id).emit("receive_message", { sender_id, content, receiver_id });
   });
 
   socket.on("disconnect", () => {

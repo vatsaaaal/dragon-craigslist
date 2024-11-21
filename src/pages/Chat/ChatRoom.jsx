@@ -4,12 +4,12 @@ import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
   const { room_code } = useParams();
-  const { messages = [], sendMessage = () => {} } = useChat(room_code) || {};
+  const { messages, sendMessage, userId } = useChat(room_code);
   const [newMessage, setNewMessage] = useState('');
   
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
-      sendMessage(newMessage); // Send user and content
+      sendMessage(newMessage);
       setNewMessage('');
     }
   };
@@ -19,8 +19,16 @@ const ChatRoom = () => {
       <div className="chat-room">
         <div className="messages">
           {messages.map((msg, index) => (
-            <div key={index} className="message">
-              <strong>{msg.user}:</strong> {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+            <div 
+              key={index} 
+              className={`message ${msg.sender_id === userId ? 'message-own' : 'message-other'}`}
+            >
+              <div className="message-header">
+                User {msg.sender_id}
+              </div>
+              <div className="message-content">
+                {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+              </div>
             </div>
           ))}
         </div>
