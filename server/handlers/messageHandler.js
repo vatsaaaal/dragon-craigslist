@@ -15,23 +15,6 @@ const validateMessageData = (data) => {
     return { valid: true };
 }
 
-// Store message to the database
-const saveMessageToDatabase = async (message) => {
-    const { content, user, room_id, receiver_id } = message;
-    try {
-        const query = `
-            INSERT INTO message (sender_id, receiver_id, content, room_id, timestamp)
-            VALUES ($1, $2, $3, $4, NOW()) RETURNING *;
-        `;
-        const values = [user, receiver_id, content, room_id];
-        const result = await client.query(query, values);
-        return result.rows[0];
-    } catch (error) {
-        console.error('Error saving message to database:', error);
-        throw new Error('Database error');
-    }
-};
-
 export const handleSendMessage = async (socket, io, data) => {
     // Validate the data
     const { valid, error } = validateMessageData(data);
@@ -41,9 +24,6 @@ export const handleSendMessage = async (socket, io, data) => {
     }
 
     try {
-        // Save message to DB
-        const savedMessage = await saveMessageToDatabase(data);
-
         // Emit the message to the room
         const { user, content, room_id } = savedMessage;
         io.in(room_id).emit('receive_message', {

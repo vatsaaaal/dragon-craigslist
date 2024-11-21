@@ -21,10 +21,10 @@ const ChatRoom = () => {
           {messages.map((msg, index) => (
             <div 
               key={index} 
-              className={`message ${msg.user === userId ? 'message-own' : 'message-other'}`}
+              className={`message ${msg.sender_id === userId ? 'message-own' : 'message-other'}`}
             >
               <div className="message-header">
-                User {msg.user}
+                User {msg.sender_id}
               </div>
               <div className="message-content">
                 {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}

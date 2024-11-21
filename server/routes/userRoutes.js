@@ -2,9 +2,30 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { client } from "../server.js";
 import { config } from "../config.js";
+import getUserIdFromToken from "../middleware/getUserIdFromToken.js"; // Import the middleware
 
 const router = express.Router();
 const JWT_SECRET = config.JWT_SECRET;
+
+// Check user Id with res.locals
+router.get("/me", getUserIdFromToken, async (req, res) => {
+  try {
+    const user_id = res.locals.user_id; // Set by middleware
+    if (!user_id) {
+      return res.status(401).json({ error: "Unauthorized: No user ID found" });
+    }
+
+    const result = await client.query('SELECT * FROM "user" WHERE user_id = $1;', [user_id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error("Error fetching authenticated user:", error);
+    res.status(500).json({ error: "Failed to fetch user." });
+  }
+});
 
 // Create a new user (Registration)
 router.post("/", async (req, res) => {
