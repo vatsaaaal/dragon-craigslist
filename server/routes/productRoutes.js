@@ -4,7 +4,7 @@ import { client } from "../server.js";
 const router = express.Router();
 
 // Create a new product
-router.post("/products", async (req, res) => {
+router.post("/add-products", async (req, res) => {
   const {
     title,
     isbn,

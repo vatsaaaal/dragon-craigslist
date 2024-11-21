@@ -249,7 +249,7 @@ function Registration() {
 
                 <Box>
                     <Typography>
-                        Already have an account? 
+                        Already have an account?&nbsp;
                         <Link component={RouterLink} to='/login' color='primary'>
                             LOG IN
                         </Link>
