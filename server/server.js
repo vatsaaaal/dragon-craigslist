@@ -8,7 +8,8 @@ import { config } from "./config.js"; // Import config here
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import getUserIdFromToken from './middleware/getUserIdFromToken.js';
+import { handleSendMessage } from "./handlers/messageHandler.js";
+
 
 const { Client } = pkg;
 const app = express();
@@ -73,6 +74,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const { content, sender_id, room_id, receiver_id } = data;
     console.log(data);
+    handleSendMessage(socket, io, client, data); 
 
     // Check if the socket is in the correct room
     if (!socket.rooms.has(room_id)) {
