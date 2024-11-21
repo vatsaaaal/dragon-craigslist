@@ -32,7 +32,7 @@
           console.error('Failed to retrieve userId from server');
         }
       } catch (error) {
-        console.error('Error fetching userId:', error);
+        console.error("You are not logged in");
       }
     };
 
@@ -69,7 +69,7 @@
     // Function to send a message
     const sendMessage = (content) => {
       if (socket && currentUserId) {
-        const message = { content, user: currentUserId, receiver: receiver_id, room_id: room_code};
+        const message = { content, sender_id: currentUserId, receiver_id: receiver_id, room_id: room_code};
         socket.emit('send_message', message); // Emit the message with room_id
       }
       
