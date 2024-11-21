@@ -14,7 +14,6 @@ const getUserIdFromToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Decoded token:", decoded);
 
     // Ensure res.locals exists and set user_id
     res.locals = res.locals || {};
