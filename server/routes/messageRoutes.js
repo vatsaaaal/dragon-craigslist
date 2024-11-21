@@ -6,7 +6,6 @@ const router = express.Router();
 
 // Create a new message
 router.post("/", getUserIdFromToken, async (req, res) => {
-  console.log("Request body:", req.body);
   const { content, receiver_id } = req.body;
   const sender_id = res.locals.user_id;
   try {

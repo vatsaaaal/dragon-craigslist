@@ -11,7 +11,6 @@ export function setupWebSocket(io, client) {
   
       socket.on("send_message", (data) => {
         const { content, sender_id, room_id, receiver_id } = data;
-        console.log(data);
   
         // Call the message handler
         handleSendMessage(socket, io, client, data);
