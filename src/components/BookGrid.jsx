@@ -9,9 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function BookGrid({ searchQuery, sortOption, filterCategory }) {
   const [books, setBooks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -82,6 +84,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
                     boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
                   },
                 }}
+                onClick={() => navigate(`/products/${book.id}`)}
               >
                 <CardMedia
                   component="img"

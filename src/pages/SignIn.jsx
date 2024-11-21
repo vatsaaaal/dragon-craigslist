@@ -46,7 +46,7 @@ export default function SignIn() {
 
       if (response.ok) {
         localStorage.setItem("isLoggedIn", "true");
-        navigate("/");
+        navigate("/marketplace");
       } else {
         setErrorMessage("Invalid email or password. Please try again.");
       }
