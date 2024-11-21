@@ -9,6 +9,7 @@ import SignIn from './pages/SignIn';
 import LandingPage from './pages/Landing';
 import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import MarketplacePage from "./pages/Marketplace";
+import Book from "./pages/Book";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="admin/dashboard" element={<AdminDashboard />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/marketplace" element={<MarketplacePage />} />
+        <Route path="/products/:id" element={<Book />} />
       </Routes>
     </Router>
   );

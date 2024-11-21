@@ -1,5 +1,6 @@
 import express from "express";
 import { client } from "../server.js";
+import getUserIdFromToken from "../middleware/getUserIdFromToken.js";
 
 const router = express.Router();
 
@@ -57,16 +58,25 @@ router.get("/all-books", async (req, res) => {
 });
 
 // Get a single product by ID
-router.get("/products/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/:id", getUserIdFromToken, async (req, res) => {
+  const { id } = req.params; // Get product ID from URL
+  const loggedInUserId = res.locals.user_id; // Extract user ID from middleware
+
   try {
+    // Fetch the product details
     const result = await client.query(`SELECT * FROM product WHERE id = $1;`, [
       id,
     ]);
     if (result.rows.length === 0) {
       return res.status(404).send("Product not found.");
     }
-    res.json(result.rows[0]);
+
+    const product = result.rows[0];
+
+    // Determine ownership
+    const isOwner = product.user_id === loggedInUserId;
+
+    res.json({ product, isOwner }); // Send product details and ownership info
   } catch (error) {
     console.error("Error fetching product:", error);
     res.status(500).send("Error fetching product.");
@@ -74,7 +84,7 @@ router.get("/products/:id", async (req, res) => {
 });
 
 // Update a product by ID
-router.put("/products/:id", async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { id } = req.params;
   const {
     title,
@@ -118,7 +128,7 @@ router.put("/products/:id", async (req, res) => {
 });
 
 // Delete a product by ID
-router.delete("/products/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await client.query(
