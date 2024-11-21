@@ -20,6 +20,8 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 // Get messages based on user id
+// Ask question about how to test
+// Ask for help with the middleware, is that the easiest way
 router.get("/past_messages", getUserIdFromToken, async (req, res) => {
   const user_id = req.user.user_id;
   console.log(user_id);
@@ -115,6 +117,32 @@ router.get("/:sender_id/:receiver_id", async (req, res) => {
   } catch (error) {
     console.error("Error loading message:", error);
     res.status(500).send("Error loading message.");
+  }
+});
+
+router.post('/send_message', getUserIdFromToken, async (req, res) => {
+  const { content, receiver_id } = req.body;
+  const user_id = req.user.userId;
+
+  if (!content || !receiver_id) {
+    return res.status(400).json({ message: 'Content and receiver_id are required.' });
+  }
+
+  try {
+    // Save the message to the database
+    const query = `
+      INSERT INTO message (sender_id, receiver_id, content)
+      VALUES ($1, $2, $3) RETURNING *;
+    `;
+    const values = [user_id, receiver_id, content];
+    const result = await client.query(query, values);
+    const savedMessage = result.rows[0];
+    console.log(savedMessage);
+
+    res.status(200).json({ message: 'Message sent successfully!' });
+  } catch (error) {
+    console.error('Error saving message:', error);
+    res.status(500).json({ message: 'Failed to send message.' });
   }
 });
 
