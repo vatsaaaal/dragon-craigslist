@@ -8,7 +8,7 @@ import { config } from "./config.js"; // Import config here
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import { handleSendMessage } from "./handlers/messageHandler.js";
+import { setupWebSocket } from "./handlers/websocket.js";
 
 
 const { Client } = pkg;
@@ -61,34 +61,8 @@ app.use("/messages", messageRoutes);
 
 export { client, config }; // Export client and config
 
-io.on("connection", (socket) => {
-  console.log(`Socket created: ${socket.id}`);
-
-  socket.on("join_room", (room) => {
-    if (room) {
-      socket.join(room);
-      console.log(`User ${socket.id} joined room: ${room}`);
-    }
-  });
-
-  socket.on("send_message", (data) => {
-    const { content, sender_id, room_id, receiver_id } = data;
-    console.log(data);
-    handleSendMessage(socket, io, client, data); 
-
-    // Check if the socket is in the correct room
-    if (!socket.rooms.has(room_id)) {
-      console.error(`User ${sender_id} attempted to send a message to a room they are not part of: ${room_id}`);
-      return;
-    }
-
-    io.in(room_id).emit("receive_message", { sender_id, content, receiver_id });
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
+// Pass io and client to the WebSocket handler
+setupWebSocket(io, client);
 
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

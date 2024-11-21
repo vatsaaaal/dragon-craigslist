@@ -44,6 +44,7 @@
       if (!currentUserId) 
         return; // Don't initialize socket until we have userId
       
+      console.log('Initializing WebSocket connection...');
       // Connect to the WebSocket server
       const newSocket = io(SOCKET_SERVER_URL);
       setSocket(newSocket);
@@ -52,17 +53,15 @@
 
       // Listen for incoming messages
       newSocket.on('receive_message', (message) => {
-        if (message.user === currentUserId) {
-          console.log("Your message:", message);
-        } else {
-          console.log("Message from other user:", message);
-        }
         setMessages((prevMessages) => [...prevMessages, message]);
       });
 
       // Clean up the connection when the component is unmounted
       return () => {
-        newSocket.disconnect();
+        console.log('Disconnecting WebSocket connection...');
+        if (newSocket) {
+          newSocket.disconnect();
+        }
       };
     }, [room_code, currentUserId]);
 

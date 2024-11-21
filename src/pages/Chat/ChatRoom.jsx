@@ -44,7 +44,7 @@ const ChatRoom = () => {
               }
             }}
           />
-          <button onClick={handleSendMessage}>Send</button>
+          <button onClick={handleSendMessage} disabled={newMessage.trim() === ''} >Send</button>
         </div>
       </div>
     </div>
