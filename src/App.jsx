@@ -15,7 +15,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/chatbox/:sender_id" element={<ChatRoom />} />
+        <Route path="/chatbox/:room_code" element={<ChatRoom />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="admin/dashboard" element={<AdminDashboard />} />
