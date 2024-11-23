@@ -1,14 +1,14 @@
 import React from 'react';
-import ChatRoom from './ChatRoom'; // Import ChatRoom component
+import ChatRoom from './ChatRoom';
+import ChatList from './ChatList';
 import './ChatPage.css';
 
 const ChatPage = () => {
   return (
     <div className="chat-page">
+      <ChatList /> {/* Left side for chat list */}
       <div className="chat-box">
-        <h1>Welcome to the Chat Page</h1>
-        <p>This is the chat interface.</p>
-        <ChatRoom /> {/* Embed ChatRoom component here */}
+        <ChatRoom /> {/* Right side for chat room */}
       </div>
     </div>
   );

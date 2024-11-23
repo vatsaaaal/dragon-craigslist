@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useChat } from '../hooks/useChat';
 import {
   Container,
   Typography,
@@ -11,6 +12,7 @@ import {
   CardContent,
   CardActions,
 } from "@mui/material";
+import { fetchUserId } from "../hooks/useFetchUserId";
 
 function Book() {
   const { id } = useParams(); // Get the book ID from the URL
@@ -18,6 +20,19 @@ function Book() {
   const [isOwner, setIsOwner] = useState(false); // State to hold ownership status
   const [loading, setLoading] = useState(true); // State to indicate loading
   const [error, setError] = useState(null); // State to hold errors
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  // Fetch user ID when component mounts
+  useEffect(() => {
+    const getUserId = async () => {
+      const user = await fetchUserId();
+      if (user) {
+        setCurrentUserId(user.user_id); // Store user_id in state
+      }
+    };
+
+    getUserId();
+  }, []);
 
   // Fetch the book details
   useEffect(() => {
@@ -41,6 +56,17 @@ function Book() {
 
     fetchBookDetails();
   }, [id]);
+
+  const handleContactUser = async() => {
+    console.log("Current User ID:", currentUserId, "Book Owner ID:", book?.user_id);
+
+    if (currentUserId && book?.user_id && book?.id) {
+      const targetUrl = `http://localhost:5173/chatbox/${currentUserId}_${book.user_id}_${book.id}`;
+      window.location.href = targetUrl;
+    } else {
+      console.error("User ID or book information is missing.");
+    }
+  };
 
   if (loading) {
     return (
@@ -117,6 +143,19 @@ function Book() {
             </Button>
             <Button variant="outlined" color="error">
               Delete
+            </Button>
+          </CardActions>
+        )}
+        {!isOwner && (
+          <CardActions>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                handleContactUser();
+              }}
+            >
+              Contact User
             </Button>
           </CardActions>
         )}
