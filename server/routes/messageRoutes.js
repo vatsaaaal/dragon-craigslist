@@ -21,11 +21,38 @@ router.post("/", getUserIdFromToken, async (req, res) => {
   }
 });
 
+// Get user the account have talked with
+router.get("/past_user", getUserIdFromToken, async (req, res) => {
+  const user_id = res.locals.user_id;
+  console.log(user_id);
+
+  try {
+    const result = await client.query(
+      `SELECT DISTINCT ON (u.username) 
+         u.username, 
+         m.created 
+       FROM message m 
+       JOIN "user" u 
+       ON (m.sender_id = u.user_id OR m.receiver_id = u.user_id) 
+       WHERE u.user_id != $1 
+       ORDER BY u.username, m.created DESC`,
+      [user_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "No messages found for this user." });
+    }
+
+    return res.json(result.rows);
+  } catch (error) {
+    console.error("Error retrieving messages:", error);
+    return res.status(500).send("Error retrieving messages");
+  }
+});
+
 // Get messages based on user id
-// Ask question about how to test
-// Ask for help with the middleware, is that the easiest way
-router.get("/past_messages", async (req, res) => {
-  const user_id = req.user.user_id;
+router.get("/past_messages", getUserIdFromToken, async (req, res) => {
+  const user_id = res.locals.user_id;
   console.log(user_id);
 
   try {
