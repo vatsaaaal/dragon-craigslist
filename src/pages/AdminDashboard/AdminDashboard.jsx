@@ -38,6 +38,7 @@ const cardStyle = {
 
 export default function AdminDashboard() {
     const [listOfUsers, setListOfUsers] = useState([]);
+    const [listOfProducts, setListOfProducts] = useState([]);
 
     useEffect(() => {
         const fetchListOfUsers = async () => {
@@ -54,6 +55,23 @@ export default function AdminDashboard() {
         };
         fetchListOfUsers();
     }, []);
+
+    useEffect(() => {
+        const fetchListOfProducts = async () => {
+            try {
+                let response = await axios.get("http://localhost:3000/admin/all-products");
+                if (!response.status === 200) {
+                    throw new Error(`HTTP response error! status: ${response.status}`)
+                }
+                let productsData = response.data;
+                setListOfProducts(productsData);
+            } catch(error) {
+                console.error("Error fetching products (client side): ", error);
+            }
+        };
+        fetchListOfProducts();
+    }, []);
+
 
 
     const toggleBlockUser = async (userId, currentStatus) => {
@@ -74,8 +92,8 @@ export default function AdminDashboard() {
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="body2" color="textSecondary">Recent Posts</Typography>
-                                    <Typography variant="h4" fontWeight="bold">10</Typography>
-                                    <Typography variant="body2" color="green">+2 New Posts Today</Typography>
+                                    <Typography variant="h4" fontWeight="bold">{listOfProducts.length}</Typography>
+                                    <Typography variant="body2" color="green">0 New Posts Today</Typography>
                                 </Box>
                                 <BookCopy size={32} color="#2196f3" />
                             </Box>

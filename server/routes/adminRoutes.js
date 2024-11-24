@@ -6,13 +6,23 @@ const router = express.Router();
 router.get("/all-users", async (req, res) => {
     try {
         let users = await client.query('SELECT * FROM "user";');
-        console.log("query users: ", users);
         res.json(users.rows);
     } catch(error) {
         console.error("Error fetching users information:", error);
         res.status(500).send("Error fetching users information.");
     }
 });
+
+
+router.get("/all-products", async (req, res) => {
+    try {
+        let products = await client.query('SELECT * FROM product;');
+        res.json(products.rows);
+    } catch(error) {
+        console.error("Error fetching products:", error);
+        res.status(500).send("Error fetching products.");
+    }
+})
 
 router.post("/block-user/:id", async (req, res) => {
     const userId = parseInt(req.params.id);
@@ -30,6 +40,8 @@ router.post("/block-user/:id", async (req, res) => {
         res.status(500).json({ message: "Error updating user status." });
     }
 });
+
+
 
 
 
