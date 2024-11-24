@@ -73,10 +73,6 @@ export default function AdminDashboard() {
         fetchListOfProducts();
     }, []);
 
-    useEffect(() => {
-        console.log("Users: ", listOfUsers);
-    })
-
     const toggleBlockUser = async (userId, currentStatus) => {
         console.log("Blocked!");
     };
@@ -94,6 +90,9 @@ export default function AdminDashboard() {
         });
         setListOfNewAccounts(usersCreatedToday); 
     }, [listOfUsers]);
+
+    // Inventory Cost 
+    let inventoryCost = listOfProducts.reduce((total, product) => total + (product.price || 0), 0);
 
     return (
         <Box p={1}>
@@ -133,7 +132,7 @@ export default function AdminDashboard() {
                             <Box>
                                 <Typography variant="body2" color="textSecondary">Blocked Users</Typography>
                                 <Typography variant="h4" fontWeight="bold">{numOfBlockedUsers}</Typography>
-                                <Typography variant="body2" color="red">0 Users have been blocked Weekly</Typography>
+                                <Typography variant="body2" color="red">{numOfBlockedUsers} Users have been blocked Weekly</Typography>
                             </Box>
                             <UserRoundX size={32} color="#2196f3" />
                         </Box>
@@ -144,9 +143,9 @@ export default function AdminDashboard() {
                         <CardContent sx={contentStyle}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
-                                    <Typography variant="body2" color="textSecondary">Inventories</Typography>
-                                    <Typography variant="h4" fontWeight="bold">99</Typography>
-                                    <Typography variant="body2" color="green">+10% Products Weekly</Typography>
+                                    <Typography variant="body2" color="textSecondary">Inventory Cost</Typography>
+                                    <Typography variant="h4" fontWeight="bold">${inventoryCost}</Typography>
+                                    <Typography variant="body2" color="green">+${inventoryCost} Products Daily</Typography>
                                 </Box>
                                 <SquareKanban size={32} color="#2196f3" />
                             </Box>
@@ -179,7 +178,6 @@ export default function AdminDashboard() {
                     </Card>
                 </Box>
 
-                {/* Browser Stats Table */}
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <Card sx={{ mt: 4 }}>
                         <CardHeader title="Recent Posts Report" />
@@ -217,7 +215,7 @@ export default function AdminDashboard() {
                                     </thead>
                                     <tbody>
                                         {listOfNewAccounts.map((item, index) => (
-                                        <tr key={item.user_id}> {/* Use unique key based on user_id */}
+                                        <tr key={item.user_id}> 
                                             <td style={{ padding: '16px' }}>{item.user_id}</td>
                                             <td style={{ padding: '16px' }}>{item.username}</td>
                                             <td style={{ padding: '16px' }}>{item.email}</td>
@@ -231,28 +229,6 @@ export default function AdminDashboard() {
 
                     <Card sx={{ mt: 4 }}>
                         <CardHeader title="Blocked Users Report" />
-                        <CardContent>
-                            <Box sx={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%' }}>
-                                <thead>
-                                    <tr>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Browser</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {browserData.map((item, index) => (
-                                    <tr key={index}>
-                                        <td style={{ padding: '16px' }}>{item.browser}</td>
-                                    </tr>
-                                    ))}
-                                </tbody>
-                                </table>
-                            </Box>
-                        </CardContent>
-                    </Card>
-
-                    <Card sx={{ mt: 4 }}>
-                        <CardHeader title="Inventories Report" />
                         <CardContent>
                             <Box sx={{ overflowX: 'auto' }}>
                                 <table style={{ width: '100%' }}>
