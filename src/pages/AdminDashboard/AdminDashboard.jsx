@@ -39,6 +39,7 @@ const cardStyle = {
 export default function AdminDashboard() {
     const [listOfUsers, setListOfUsers] = useState([]);
     const [listOfProducts, setListOfProducts] = useState([]);
+    const [listOfNewAccounts, setListOfNewAccounts] = useState([]);
 
     useEffect(() => {
         const fetchListOfUsers = async () => {
@@ -86,6 +87,14 @@ export default function AdminDashboard() {
     let todayDate = new Date().toISOString().split('T')[0]; 
     let numOfNewUsersPerDay = listOfUsers.filter(user => user.created_at.split('T')[0] === todayDate).length;
 
+    useEffect(() => {    
+        const usersCreatedToday = listOfUsers.filter(user => {
+            const userCreatedAtDate = user.created_at.split('T')[0]; 
+            return userCreatedAtDate === todayDate; 
+        });
+        setListOfNewAccounts(usersCreatedToday); 
+    }, [listOfUsers]);
+
     return (
         <Box p={1}>
             <PageHeader />
@@ -110,7 +119,7 @@ export default function AdminDashboard() {
                         <CardContent sx={contentStyle}>
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
-                                    <Typography variant="body2" color="textSecondary">New Sign Up</Typography>
+                                    <Typography variant="body2" color="textSecondary">New Accounts</Typography>
                                     <Typography variant="h4" fontWeight="bold">{numOfNewUsersPerDay}</Typography>
                                     <Typography variant="body2" color="green">+{numOfNewUsersPerDay} Daily New Users Account</Typography>                                </Box>
                                 <Users size={32} color="#2196f3" />
@@ -148,7 +157,7 @@ export default function AdminDashboard() {
                 {/* Line Chart */}
                 <Box>
                     <Card sx={{ mt: 4 }}>
-                        <CardHeader title="Users' Account Overview" />
+                        <CardHeader title="Overview of Users" />
                         <CardContent>
                             <Box sx={{ height: 300 }}>
                                 <LineChart
@@ -195,22 +204,26 @@ export default function AdminDashboard() {
                     </Card>
 
                     <Card sx={{ mt: 4 }}>
-                        <CardHeader title="Sign Up Report" />
+                        <CardHeader title="New Accounts Report" />
                         <CardContent>
                             <Box sx={{ overflowX: 'auto' }}>
                                 <table style={{ width: '100%' }}>
-                                <thead>
-                                    <tr>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Browser</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {browserData.map((item, index) => (
-                                    <tr key={index}>
-                                        <td style={{ padding: '16px' }}>{item.browser}</td>
-                                    </tr>
-                                    ))}
-                                </tbody>
+                                    <thead>
+                                        <tr>
+                                            <th style={{ padding: '16px', textAlign: 'left' }}>User IDs</th>
+                                            <th style={{ padding: '16px', textAlign: 'left' }}>Username</th>
+                                            <th style={{ padding: '16px', textAlign: 'left' }}>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {listOfNewAccounts.map((item, index) => (
+                                        <tr key={item.user_id}> {/* Use unique key based on user_id */}
+                                            <td style={{ padding: '16px' }}>{item.user_id}</td>
+                                            <td style={{ padding: '16px' }}>{item.username}</td>
+                                            <td style={{ padding: '16px' }}>{item.email}</td>
+                                        </tr>
+                                        ))}
+                                    </tbody>
                                 </table>
                             </Box>
                         </CardContent>
