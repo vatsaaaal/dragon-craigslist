@@ -72,13 +72,19 @@ export default function AdminDashboard() {
         fetchListOfProducts();
     }, []);
 
-
+    useEffect(() => {
+        console.log("Users: ", listOfUsers);
+    })
 
     const toggleBlockUser = async (userId, currentStatus) => {
         console.log("Blocked!");
-    }
+    };
 
     const numOfBlockedUsers = listOfUsers.filter(user => user.is_blocked).length;
+    
+    // Number of new Users per day
+    let todayDate = new Date().toISOString().split('T')[0]; 
+    let numOfNewUsersPerDay = listOfUsers.filter(user => user.created_at.split('T')[0] === todayDate).length;
 
     return (
         <Box p={1}>
@@ -105,9 +111,8 @@ export default function AdminDashboard() {
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="body2" color="textSecondary">New Sign Up</Typography>
-                                    <Typography variant="h4" fontWeight="bold">2</Typography>
-                                    <Typography variant="body2" color="green">+2 Weekly New Users Account</Typography>
-                                </Box>
+                                    <Typography variant="h4" fontWeight="bold">{numOfNewUsersPerDay}</Typography>
+                                    <Typography variant="body2" color="green">+{numOfNewUsersPerDay} Daily New Users Account</Typography>                                </Box>
                                 <Users size={32} color="#2196f3" />
                             </Box>
                         </CardContent>
