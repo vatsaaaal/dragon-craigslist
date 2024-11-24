@@ -40,6 +40,7 @@ export default function AdminDashboard() {
     const [listOfUsers, setListOfUsers] = useState([]);
     const [listOfProducts, setListOfProducts] = useState([]);
     const [listOfNewAccounts, setListOfNewAccounts] = useState([]);
+    const [listOfBlockedUsers, setListOfBlockedUsers]= useState([]);
 
     useEffect(() => {
         const fetchListOfUsers = async () => {
@@ -186,13 +187,27 @@ export default function AdminDashboard() {
                                 <table style={{ width: '100%' }}>
                                 <thead>
                                     <tr>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Browser</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Product ID</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>ISBN</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Title</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Genre</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Author</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Price</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Quantity</th>
+                                    <th style={{ padding: '16px', textAlign: 'left' }}>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {browserData.map((item, index) => (
+                                    {listOfProducts.map((item, index) => (
                                     <tr key={index}>
-                                        <td style={{ padding: '16px' }}>{item.browser}</td>
+                                        <td style={{ padding: '16px' }}>{item.id}</td>
+                                        <td style={{ padding: '16px' }}>{item.isbn}</td>
+                                        <td style={{ padding: '16px' }}>{item.title}</td>
+                                        <td style={{ padding: '16px' }}>{item.genre}</td>
+                                        <td style={{ padding: '16px' }}>{item.author}</td>
+                                        <td style={{ padding: '16px' }}>${item.price}</td>
+                                        <td style={{ padding: '16px' }}>{item.quantity}</td>
+                                        <td style={{ padding: '16px' }}>{item.sale_completed}</td>
                                     </tr>
                                     ))}
                                 </tbody>
