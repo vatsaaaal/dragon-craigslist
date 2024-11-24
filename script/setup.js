@@ -78,7 +78,8 @@ async function setupDatabase() {
                     phone VARCHAR(15),
                     phone_visibility BOOLEAN DEFAULT FALSE,
                     access_level VARCHAR(10) DEFAULT 'user',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    is_blocked BOOLEAN DEFAULT FALSE
                 );
             `);
       console.log('Created "user" table successfully');

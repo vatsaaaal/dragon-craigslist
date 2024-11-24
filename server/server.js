@@ -8,6 +8,7 @@ import { config } from "./config.js"; // Import config here
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import { setupWebSocket } from "./handlers/websocket.js";
 
 
@@ -58,6 +59,7 @@ initializeDatabaseConnection().catch((error) => {
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/messages", messageRoutes);
+app.use("/admin", adminRoutes);
 
 export { client, config }; // Export client and config
 

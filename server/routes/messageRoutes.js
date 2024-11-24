@@ -31,11 +31,11 @@ router.get("/past_user", getUserIdFromToken, async (req, res) => {
       `SELECT DISTINCT ON (u.username) 
          u.username, 
          m.created 
-       FROM message m 
-       JOIN "user" u 
-       ON (m.sender_id = u.user_id OR m.receiver_id = u.user_id) 
-       WHERE u.user_id != $1 
-       ORDER BY u.username, m.created DESC`,
+        FROM message m 
+        JOIN "user" u 
+        ON (m.sender_id = u.user_id OR m.receiver_id = u.user_id) 
+        WHERE u.user_id != $1 
+        ORDER BY u.username, m.created DESC`,
       [user_id]
     );
 

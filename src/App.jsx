@@ -1,7 +1,6 @@
 import React from 'react';
 import { useState } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import './App.css';
 import ChatPage from './pages/Chat/ChatPage';
 import ChatRoom from './pages/Chat/ChatRoom';
 import Registration from './pages/Registration';
