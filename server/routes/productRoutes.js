@@ -1,46 +1,73 @@
 import express from "express";
 import { client } from "../server.js";
 import getUserIdFromToken from "../middleware/getUserIdFromToken.js";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const router = express.Router();
 
-// Create a new product
-router.post("/add-products", async (req, res) => {
-  const {
-    title,
-    isbn,
-    author,
-    genre,
-    date_published,
-    price,
-    condition,
-    quantity,
-    description,
-    user_id,
-  } = req.body;
-  try {
-    const result = await client.query(
-      `INSERT INTO product (title, isbn, author, genre, date_published, price, condition, quantity, description, user_id) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-      [
-        title,
-        isbn,
-        author,
-        genre,
-        date_published,
-        price,
-        condition,
-        quantity,
-        description,
-        user_id,
-      ]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    console.error("Error creating product:", error);
-    res.status(500).send("Error creating product.");
-  }
+// Define __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../../public/assets")); // Set destination folder for uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Generate a unique filename
+  },
 });
+const upload = multer({ storage });
+
+// Create product
+router.post(
+  "/add-products",
+  upload.single("book_image"), // Expecting 'book_image' field for the file
+  getUserIdFromToken,
+  async (req, res) => {
+    const {
+      title,
+      isbn,
+      author,
+      genre,
+      date_published,
+      price,
+      condition,
+      quantity,
+      description,
+    } = req.body;
+
+    const user_id = res.locals.user_id; // Extract user ID from middleware
+    const book_image_url = req.file ? `${req.file.filename}` : null; // Get file URL
+
+    try {
+      const result = await client.query(
+        `INSERT INTO product (title, isbn, author, genre, date_published, price, condition, quantity, description, user_id, book_image_url) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        [
+          title,
+          isbn,
+          author,
+          genre,
+          date_published,
+          price,
+          condition,
+          quantity,
+          description,
+          user_id,
+          book_image_url,
+        ]
+      );
+      res.status(201).json(result.rows[0]); // Send back the created product
+    } catch (error) {
+      console.error("Error creating product:", error);
+      res.status(500).send("Error creating product.");
+    }
+  }
+);
 
 // Get all products
 router.get("/all-books", async (req, res) => {
