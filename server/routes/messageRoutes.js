@@ -6,12 +6,12 @@ const router = express.Router();
 
 // Create a new message
 router.post("/", getUserIdFromToken, async (req, res) => {
-  const { content, receiver_id } = req.body;
+  const { content, receiver_id, room_id } = req.body;
   const sender_id = res.locals.user_id;
   try {
     const result = await client.query(
-      "INSERT INTO message (content, created, sender_id, receiver_id, read_status) VALUES ($1, NOW(), $2, $3, false) RETURNING *",
-      [content, sender_id, receiver_id]
+      "INSERT INTO message (content, created, sender_id, receiver_id, read_status, product_id) VALUES ($1, NOW(), $2, $3, false, $4) RETURNING *",
+      [content, sender_id, receiver_id, room_id]
     );
     return res.status(201).json(result.rows);
   } catch (error) {
@@ -21,30 +21,25 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 // Get user the account have talked with
-router.get("/past_user", getUserIdFromToken, async (req, res) => {
+router.get("/:past_product", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
 
   try {
     const result = await client.query(
-      `SELECT DISTINCT ON (u.username) 
-         u.username, 
-         m.created 
-       FROM message m 
-       JOIN "user" u 
-       ON (m.sender_id = u.user_id OR m.receiver_id = u.user_id) 
-       WHERE u.user_id != $1 
-       ORDER BY u.username, m.created DESC`,
+      `SELECT DISTINCT product_id
+       FROM message
+       WHERE sender_id = $1 OR receiver_id = $1`,
       [user_id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No messages found for this user." });
+      return res.status(404).json({ error: "No products found for this user." });
     }
 
     return res.json(result.rows);
   } catch (error) {
-    console.error("Error retrieving messages:", error);
-    return res.status(500).send("Error retrieving messages");
+    console.error("Error retrieving products:", error);
+    return res.status(500).send("Error retrieving products.");
   }
 });
 
@@ -54,7 +49,9 @@ router.get("/past_messages", getUserIdFromToken, async (req, res) => {
 
   try {
     const result = await client.query(
-      "SELECT id, sender_id, receiver_id, content, created FROM message WHERE sender_id = $1 OR receiver_id = $1 ORDER BY created ASC",
+      `SELECT *
+       FROM message
+       WHERE sender_id = $1 OR receiver_id = $1`,
       [user_id]
     );
 
@@ -126,38 +123,6 @@ router.put("/edit/:message_id", async (req, res) => {
   } catch (error) {
     console.error("Error editing message:", error);
     return res.status(500).send("Error editing message.");
-  }
-});
-
-// Get messages between 2 client sender and retriever using product id
-router.get("/:product_id", async (req, res) => {
-  const { product_id } = req.params;
-  const user_id = res.locals.user_id;
-
-  try {
-    const product_result = await client.query(
-      "SELECT user_id FROM product WHERE id = $1;",
-      [product_id]
-    );
-
-    const seller_id = productResult.rows[0]?.user_id;
-
-    if (!seller_id) {
-      return res.status(404).json({ error: "Product not found." });
-    }
-
-   const messagesResult = await client.query(
-      `SELECT * FROM message 
-       WHERE (sender_id = $1 AND receiver_id = $2) 
-       OR (sender_id = $2 AND receiver_id = $1)
-       ORDER BY created ASC`,
-      [user_id, seller_id]
-    );
-
-    return res.status(200).json(messagesResult.rows);
-  } catch (error) {
-    console.error("Error loading messages:", error);
-    return res.status(500).send("Error loading messages.");
   }
 });
 
