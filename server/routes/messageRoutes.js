@@ -13,7 +13,6 @@ router.post("/", getUserIdFromToken, async (req, res) => {
       "INSERT INTO message (content, created, sender_id, receiver_id, read_status) VALUES ($1, NOW(), $2, $3, false) RETURNING *",
       [content, sender_id, receiver_id]
     );
-    console.log("New message saved:", result.rows);
     return res.status(201).json(result.rows);
   } catch (error) {
     console.error("Error saving message:", error);
@@ -24,7 +23,6 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 // Get user the account have talked with
 router.get("/past_user", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
-  console.log(user_id);
 
   try {
     const result = await client.query(
@@ -53,7 +51,6 @@ router.get("/past_user", getUserIdFromToken, async (req, res) => {
 // Get messages based on user id
 router.get("/past_messages", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
-  console.log(user_id);
 
   try {
     const result = await client.query(
@@ -132,20 +129,35 @@ router.put("/edit/:message_id", async (req, res) => {
   }
 });
 
-// Get messages between 2 client sender and retriever
-router.get("/:sender_id/:receiver_id", async (req, res) => {
-  const { sender_id, receiver_id } = req.params;
+// Get messages between 2 client sender and retriever using product id
+router.get("/:product_id", async (req, res) => {
+  const { product_id } = req.params;
+  const user_id = res.locals.user_id;
 
   try {
-    const result = await client.query(
-      "SELECT * FROM message WHERE (sender_id = $1 AND receiver_id = $2) OR  (sender_id = $2 AND receiver_id = $1) ORDER BY created ASC;",
-      [sender_id, receiver_id]
+    const product_result = await client.query(
+      "SELECT user_id FROM product WHERE id = $1;",
+      [product_id]
     );
 
-    return res.status(200).json(result.rows);
+    const seller_id = productResult.rows[0]?.user_id;
+
+    if (!seller_id) {
+      return res.status(404).json({ error: "Product not found." });
+    }
+
+   const messagesResult = await client.query(
+      `SELECT * FROM message 
+       WHERE (sender_id = $1 AND receiver_id = $2) 
+       OR (sender_id = $2 AND receiver_id = $1)
+       ORDER BY created ASC`,
+      [user_id, seller_id]
+    );
+
+    return res.status(200).json(messagesResult.rows);
   } catch (error) {
-    console.error("Error loading message:", error);
-    return res.status(500).send("Error loading message.");
+    console.error("Error loading messages:", error);
+    return res.status(500).send("Error loading messages.");
   }
 });
 
