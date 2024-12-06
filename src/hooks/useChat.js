@@ -46,7 +46,7 @@ export const useChat = () => {
     setSocket(newSocket);
 
     // Join the room with bookId and userId
-    newSocket.emit('join_room', { bookId, userId: currentUserId });
+    newSocket.emit('join_room', { bookId: bookId, userId: currentUserId });
 
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
