@@ -21,7 +21,7 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 // Get user the account have talked with
-router.get("/:past_product", getUserIdFromToken, async (req, res) => {
+router.get("/past_product", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
 
   try {

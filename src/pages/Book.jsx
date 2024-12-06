@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { fetchUserId } from "../hooks/useFetchUserId";
 import {
   Container,
   Typography,
@@ -22,6 +23,7 @@ function Book() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(sessionStorage.getItem("currentUserId") || null);
 
   useEffect(() => {
     const fetchBookDetails = async () => {
@@ -42,8 +44,19 @@ function Book() {
       }
     };
 
+    const initializeUserId = async () => {
+      if (!currentUserId) {
+        const user = await fetchUserId();
+        if (user && user.user_id) {
+          setCurrentUserId(user.user_id); // Set in state
+          sessionStorage.setItem("currentUserId", user.user_id); // Store in sessionStorage
+        }
+      }
+    };
+
+    initializeUserId();
     fetchBookDetails();
-  }, [id]);
+  }, [id, currentUserId]);
 
   const handleDelete = async () => {
     try {
@@ -57,8 +70,11 @@ function Book() {
     } catch (error) {
       console.error("Error deleting product:", error);
       setMessage("Failed to delete product.");
+    }
+  }
 
   const handleContactUser = async() => {
+    try {
     console.log("Current User ID:", currentUserId, "Book Owner ID:", book?.user_id);
 
     if (currentUserId && book?.id) {
@@ -68,7 +84,10 @@ function Book() {
     } else {
       console.error("User ID or book information is missing.");
     }
+  } catch (error) {
+    console.error("Error in handleContactUser:", error);
   };
+}
 
   if (loading) {
     return (
@@ -137,7 +156,7 @@ function Book() {
             Date Published: {new Date(book.date_published).toLocaleDateString()}
           </Typography>
         </CardContent>
-        {isOwner && (
+        {isOwner ? (
           <CardActions>
             <Button
               variant="contained"
@@ -150,7 +169,18 @@ function Book() {
               Delete
             </Button>
           </CardActions>
-        )}
+        ) : (
+          <CardActions>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleContactUser}
+            >
+              Contact Seller
+            </Button>
+          </CardActions>
+        )
+        }
       </Card>
       {message && (
         <Snackbar

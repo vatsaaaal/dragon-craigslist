@@ -24,6 +24,9 @@ const ChatList = () => {
 
           if (response.data && Array.isArray(response.data)) {
             setProducts(response.data); // Store product data in state
+
+            // Store products in sessionStorage for reuse in other components
+            sessionStorage.setItem("products", JSON.stringify(response.data));
           } else {
             console.error("Failed to retrieve products from server");
           }

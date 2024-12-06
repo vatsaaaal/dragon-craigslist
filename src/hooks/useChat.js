@@ -32,12 +32,14 @@ export const useChat = () => {
 
   // Set up WebSocket connection and join the room
   useEffect(() => {
+    const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
+
+    const bookId = productInfo?.product_id || bookInfo?.bookId;
 
     // Ensure required variables are available
     if (!currentUserId || !bookInfo || !bookInfo.bookId) return;
 
-    const { bookId } = bookInfo;
 
     console.log('Initializing WebSocket connection...');
     const newSocket = io(SOCKET_SERVER_URL, {
@@ -65,12 +67,16 @@ export const useChat = () => {
   // Function to send a message
   const sendMessage = async (content) => {
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
+    const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
+
+    const bookId = productInfo?.product_id || bookInfo?.bookId;
+
     if (!bookInfo || !bookInfo.bookId || !socket) {
       console.error('Cannot send message: Missing bookId or WebSocket connection');
       return;
     }
 
-    const { bookId, sellerId } = bookInfo;
+    const sellerId = productInfo?.sellerId || bookInfo?.sellerId;
 
     const message = {
       content,
