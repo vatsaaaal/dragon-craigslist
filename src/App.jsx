@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import MarketplacePage from "./pages/Marketplace";
 import Book from "./pages/Book";
 import PostProduct from "./pages/PostProduct";
+import EditProduct from "./pages/EditProduct";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/marketplace" element={<MarketplacePage />} />
         <Route path="/products/:id" element={<Book />} />
         <Route path="/products/post" element={<PostProduct />} />
+        <Route path="/products/edit/:id" element={<EditProduct />} />
       </Routes>
     </Router>
   );

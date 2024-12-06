@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useChat } from '../hooks/useChat';
 import {
   Container,
   Typography,
@@ -11,41 +10,30 @@ import {
   Card,
   CardContent,
   CardActions,
+  Snackbar,
+  Alert,
 } from "@mui/material";
-import { fetchUserId } from "../hooks/useFetchUserId";
 
 function Book() {
-  const { id } = useParams(); // Get the book ID from the URL
-  const [book, setBook] = useState(null); // State to hold book details
-  const [isOwner, setIsOwner] = useState(false); // State to hold ownership status
-  const [loading, setLoading] = useState(true); // State to indicate loading
-  const [error, setError] = useState(null); // State to hold errors
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [book, setBook] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
 
-  // Fetch user ID when component mounts
-  useEffect(() => {
-    const getUserId = async () => {
-      const user = await fetchUserId();
-      if (user) {
-        setCurrentUserId(user.user_id); // Store user_id in state
-      }
-    };
-
-    getUserId();
-  }, []);
-
-  // Fetch the book details
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/products/${id}`,
           {
-            withCredentials: true, // Ensure cookies are included
+            withCredentials: true,
           }
         );
         setBook(response.data.product);
-        setIsOwner(response.data.isOwner); // Set ownership status
+        setIsOwner(response.data.isOwner);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching book details:", error);
@@ -57,14 +45,18 @@ function Book() {
     fetchBookDetails();
   }, [id]);
 
-  const handleContactUser = async() => {
-    console.log("Current User ID:", currentUserId, "Book Owner ID:", book?.user_id);
-
-    if (currentUserId && book?.user_id && book?.id) {
-      const targetUrl = `http://localhost:5173/chatbox/${currentUserId}_${book.user_id}_${book.id}`;
-      window.location.href = targetUrl;
-    } else {
-      console.error("User ID or book information is missing.");
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/products/${id}`, {
+        withCredentials: true,
+      });
+      setMessage("Product deleted successfully!");
+      setTimeout(() => {
+        navigate("/marketplace");
+      }, 2000);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      setMessage("Failed to delete product.");
     }
   };
 
@@ -135,31 +127,36 @@ function Book() {
             Date Published: {new Date(book.date_published).toLocaleDateString()}
           </Typography>
         </CardContent>
-        {/* Conditionally render buttons based on ownership */}
         {isOwner && (
           <CardActions>
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate(`/products/edit/${id}`)}
+            >
               Edit
             </Button>
-            <Button variant="outlined" color="error">
+            <Button variant="outlined" color="error" onClick={handleDelete}>
               Delete
             </Button>
           </CardActions>
         )}
-        {!isOwner && (
-          <CardActions>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => {
-                handleContactUser();
-              }}
-            >
-              Contact User
-            </Button>
-          </CardActions>
-        )}
       </Card>
+      {message && (
+        <Snackbar
+          open={true}
+          autoHideDuration={3000}
+          onClose={() => setMessage(null)}
+        >
+          <Alert
+            onClose={() => setMessage(null)}
+            severity={message.includes("successfully") ? "success" : "error"}
+            sx={{ width: "100%" }}
+          >
+            {message}
+          </Alert>
+        </Snackbar>
+      )}
     </Container>
   );
 }

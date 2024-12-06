@@ -111,26 +111,26 @@ router.get("/:id", getUserIdFromToken, async (req, res) => {
 });
 
 // Update a product by ID
-router.put("/:id", async (req, res) => {
-  const { id } = req.params;
-  const {
-    title,
-    isbn,
-    author,
-    genre,
-    date_published,
-    price,
-    condition,
-    quantity,
-    description,
-    user_id,
-  } = req.body;
-  try {
-    const result = await client.query(
-      `UPDATE product 
-         SET title = $1, isbn = $2, author = $3, genre = $4, date_published = $5, price = $6, condition = $7, quantity = $8, description = $9, user_id = $10
-         WHERE id = $11 RETURNING *`,
-      [
+router.put(
+  "/:id",
+  upload.single("book_image"), // Expecting 'book_image' field for the file
+  async (req, res) => {
+    const { id } = req.params;
+    const {
+      title,
+      isbn,
+      author,
+      genre,
+      date_published,
+      price,
+      condition,
+      quantity,
+      description,
+    } = req.body;
+    const book_image_url = req.file ? `${req.file.filename}` : null; // Get file URL if provided
+
+    try {
+      const fieldsToUpdate = [
         title,
         isbn,
         author,
@@ -140,19 +140,29 @@ router.put("/:id", async (req, res) => {
         condition,
         quantity,
         description,
-        user_id,
         id,
-      ]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).send("Product not found.");
+      ];
+      let updateQuery = `UPDATE product 
+         SET title = $1, isbn = $2, author = $3, genre = $4, date_published = $5, price = $6, condition = $7, quantity = $8, description = $9`;
+
+      if (book_image_url) {
+        updateQuery += `, book_image_url = '${book_image_url}'`;
+      }
+
+      updateQuery += ` WHERE id = $10 RETURNING *`;
+
+      const result = await client.query(updateQuery, fieldsToUpdate);
+
+      if (result.rows.length === 0) {
+        return res.status(404).send("Product not found.");
+      }
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).send("Error updating product.");
     }
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error("Error updating product:", error);
-    res.status(500).send("Error updating product.");
   }
-});
+);
 
 // Delete a product by ID
 router.delete("/:id", async (req, res) => {
