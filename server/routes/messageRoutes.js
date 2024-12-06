@@ -44,15 +44,30 @@ router.get("/past_product", getUserIdFromToken, async (req, res) => {
 });
 
 // Get messages based on user id
-router.get("/past_messages", getUserIdFromToken, async (req, res) => {
+router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
+  const { product_id } = req.params;
+  const { other_user_id } = req.query;
 
   try {
     const result = await client.query(
-      `SELECT *
-       FROM message
-       WHERE sender_id = $1 OR receiver_id = $1`,
-      [user_id]
+      `SELECT 
+          id,
+          content,
+          created,
+          sender_id,
+          receiver_id,
+          product_id
+      FROM message
+      WHERE 
+          product_id = $1
+          AND (
+              (sender_id = $2 AND receiver_id = $3) OR 
+              (sender_id = $3 AND receiver_id = $2)
+          )
+      ORDER BY 
+          created ASC;`,
+      [product_id, user_id, other_user_id]
     );
 
     if (result.rows.length === 0) {

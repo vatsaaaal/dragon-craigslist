@@ -30,6 +30,29 @@ export const useChat = () => {
     fetchUserId();
   }, []);
 
+  // Fetch historical messages
+  useEffect(() => {
+    const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
+    const bookId = bookInfo?.bookId;
+    const otherUserId = bookInfo.sellerId;
+
+    const fetchHistoricalMessages = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/messages/past_messages/${bookId}`, {
+          params: { other_user_id: otherUserId },
+          withCredentials: true,
+        });
+        setMessages(response.data); // Set historical messages
+      } catch (error) {
+        console.error('Error fetching historical messages:', error.message);
+      }
+    };
+
+    if (bookId && currentUserId) {
+      fetchHistoricalMessages();
+    }
+  }, [currentUserId]);
+
   // Set up WebSocket connection and join the room
   useEffect(() => {
     const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));

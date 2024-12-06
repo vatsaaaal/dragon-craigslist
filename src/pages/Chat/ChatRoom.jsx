@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
-  const { room_code } = useParams();
-  const { messages, sendMessage, userId } = useChat(room_code);
+  const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
+  const { messages, sendMessage, currentUserId } = useChat(product_id, other_user_id);
   const [newMessage, setNewMessage] = useState('');
-  
+
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
       sendMessage(newMessage);
@@ -21,13 +21,15 @@ const ChatRoom = () => {
           {messages.map((msg, index) => (
             <div 
               key={index} 
-              className={`message ${msg.sender_id === userId ? 'message-own' : 'message-other'}`}
+              className={`message ${msg.sender_id === currentUserId ? 'message-own' : 'message-other'}`}
             >
               <div className="message-header">
-                User {msg.sender_id}
+                {msg.sender_id === currentUserId 
+                  ? 'You' 
+                  : `User ${msg.sender_id}`}
               </div>
               <div className="message-content">
-                {typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)}
+                {msg.content}
               </div>
             </div>
           ))}
@@ -44,7 +46,9 @@ const ChatRoom = () => {
               }
             }}
           />
-          <button onClick={handleSendMessage} disabled={newMessage.trim() === ''} >Send</button>
+          <button onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
+            Send
+          </button>
         </div>
       </div>
     </div>
