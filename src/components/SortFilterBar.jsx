@@ -7,11 +7,13 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function SortFilterBar({ onSearch, onSort, onFilter }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("");
+  const navigate = useNavigate();
 
   const handleSortClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,6 +73,14 @@ function SortFilterBar({ onSearch, onSort, onFilter }) {
             </MenuItem>
             <MenuItem onClick={() => handleSortClose("Title")}>Title</MenuItem>
           </Menu>
+          <Button
+            variant="contained"
+            size="small"
+            sx={{ textTransform: "none" }}
+            onClick={() => navigate(`/products/post`)}
+          >
+            Post a Product
+          </Button>
           <TextField
             select
             label="Filter By Category"
