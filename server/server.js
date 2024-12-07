@@ -36,6 +36,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 // Initialize PostgreSQL connection
 let client;
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -13,6 +13,30 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
+    useEffect(() => {
+      const fetchUsers = async () => {
+          try {
+              const response = await fetch('https://dragon-craigslist.onrender.com/users', {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              });
+
+              if (response.ok) {
+                  const data = await response.json();
+                  console.log('Response:', data);
+              } else {
+                  console.error('Failed to fetch users:', response.statusText);
+              }
+          } catch (error) {
+              console.error('Error fetching users:', error);
+          }
+      };
+
+      fetchUsers();
+  }, []); 
+
   let [isLoading, setLoading] = useState(false);
   let [loginFormData, setLoginFormData] = useState({
     email: "",
@@ -33,7 +57,7 @@ export default function SignIn() {
     event.preventDefault();
     setLoading(true);
     setErrorMessage("");
-
+  
     try {
       const response = await fetch("https://dragon-craigslist.onrender.com/users/login", {
         method: "POST",
@@ -41,14 +65,15 @@ export default function SignIn() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(loginFormData),
-        credentials: "include",
+        credentials: "include", // Include credentials (cookies) in the request
       });
-
+  
       if (response.ok) {
         localStorage.setItem("isLoggedIn", "true");
         navigate("/marketplace");
       } else {
-        setErrorMessage("Invalid email or password. Please try again.");
+        const errorData = await response.json(); // Parse server error response
+        setErrorMessage(errorData.error || "Invalid email or password. Please try again.");
       }
     } catch (error) {
       console.error("Unable to LogIn:", error);
