@@ -4,7 +4,7 @@ import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
-  const { messages, sendMessage, currentUserId } = useChat(product_id, other_user_id);
+  const { messages, sendMessage, currentUserId, currentUsername } = useChat(product_id, other_user_id);
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -12,17 +12,6 @@ const ChatRoom = () => {
       sendMessage(newMessage);
       setNewMessage('');
     }
-  };
-
-  const getMessageStyle = (senderId) => {
-    const colors = {
-      1: { backgroundColor: '#ffe082', color: '#000' }, // Yellow
-      2: { backgroundColor: '#c8e6c9', color: '#000' }, // Green
-      3: { backgroundColor: '#d1c4e9', color: '#000' }, // Purple
-      // Default style
-      default: { backgroundColor: '#f5f5f5', color: '#000' },
-    };
-    return colors[senderId] || colors.default;
   };
 
   return (
@@ -36,8 +25,8 @@ const ChatRoom = () => {
             >
               <div className="message-header" data-sender-id={msg.sender_id}>
                 {msg.sender_id === currentUserId
-                  ? msg.sender_username // Show "You" for the current user
-                  : msg.receiver_username // Show sender's name for others
+                  ? currentUsername // Show the current user's username
+                  : msg.sender_username // Show the sender's username for received messages
                 }
               </div>
               <div className="message-content">
