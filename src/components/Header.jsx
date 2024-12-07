@@ -70,7 +70,9 @@ function PageHeader() {
           <Button component={Link} to="/chatbox" color="inherit">ChatBox</Button>
           <Button color="inherit">Newstand</Button>
           <Button color="inherit">Features</Button>
-          <Button color="inherit">Contact Us</Button>
+          <Button color="inherit" onClick={() => navigate("/admin/dashboard")}>
+            Admin
+          </Button>
         </Stack>
 
         {/* Auth Buttons */}
