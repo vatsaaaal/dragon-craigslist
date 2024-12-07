@@ -41,7 +41,7 @@ function Registration() {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch(`https://dragon-craigslist.vercel.app/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
