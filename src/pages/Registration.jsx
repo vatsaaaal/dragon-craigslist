@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -13,6 +13,30 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 
 function Registration() {
+    useEffect(() => {
+      const fetchUsers = async () => {
+          try {
+              const response = await fetch('https://dragon-craigslist.onrender.com/users', {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+              });
+
+              if (response.ok) {
+                  const data = await response.json();
+                  console.log('Response:', data);
+              } else {
+                  console.error('Failed to fetch users:', response.statusText);
+              }
+          } catch (error) {
+              console.error('Error fetching users:', error);
+          }
+      };
+
+      fetchUsers();
+  }, []); 
+
   let [registerFormData, setRegisterFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,7 +54,7 @@ function Registration() {
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
-
+  
     const userData = {
       username: registerFormData.email.split("@")[0],
       password: registerFormData.password,
@@ -39,20 +63,17 @@ function Registration() {
       email: registerFormData.email,
       school_name: "Drexel University",
     };
-
+  
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch("https://dragon-craigslist.onrender.com/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
-
-      console.log("response: ", response);
-
+  
       if (response.ok) {
-        setLoading(false);
         setSuccessMessage("User registered successfully!");
         setRegisterFormData({
           firstName: "",
@@ -63,7 +84,8 @@ function Registration() {
           verifyPassword: "",
         });
       } else {
-        setErrorMessage("Failed to register user. Please try again.");
+        const errorData = await response.json(); // Parse server error response
+        setErrorMessage(errorData.error || "Failed to register user. Please try again.");
       }
     } catch (error) {
       console.error("Unable to register:", error);
@@ -72,6 +94,7 @@ function Registration() {
       setLoading(false);
     }
   };
+  
 
   const handleChangeInputs = (event) => {
     const { name, value } = event.target;

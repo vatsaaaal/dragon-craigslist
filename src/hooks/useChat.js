@@ -8,6 +8,7 @@ export const useChat = () => {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUsername, setCurrentUsername] = useState('');
 
   // Fetch the user ID when the component is mounted
   useEffect(() => {
@@ -19,6 +20,7 @@ export const useChat = () => {
 
         if (response.data && response.data.user_id) {
           setCurrentUserId(response.data.user_id);
+          setCurrentUsername(response.data.username);
         } else {
           console.error('Failed to retrieve userId from server');
         }
@@ -34,7 +36,7 @@ export const useChat = () => {
   useEffect(() => {
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
     const bookId = bookInfo?.bookId;
-    const otherUserId = bookInfo.sellerId;
+    const otherUserId = bookInfo?.sellerId;
 
     const fetchHistoricalMessages = async () => {
       try {
@@ -55,10 +57,9 @@ export const useChat = () => {
 
   // Set up WebSocket connection and join the room
   useEffect(() => {
-    const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
 
-    const bookId = productInfo?.product_id || bookInfo?.bookId;
+    const room_id = bookInfo?.bookId;
 
     // Ensure required variables are available
     if (!currentUserId || !bookInfo || !bookInfo.bookId) return;
@@ -70,11 +71,12 @@ export const useChat = () => {
     });
     setSocket(newSocket);
 
-    // Join the room with bookId and userId
-    newSocket.emit('join_room', { bookId: bookId, userId: currentUserId });
+    // Join the room room_id
+    newSocket.emit('join_room', { room_id });
 
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
+      console.log('Received message:', message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -94,18 +96,19 @@ export const useChat = () => {
 
     const bookId = productInfo?.product_id || bookInfo?.bookId;
 
-    if (!bookInfo || !bookInfo.bookId || !socket) {
+    if (!bookInfo || !bookInfo.bookId ) {
       console.error('Cannot send message: Missing bookId or WebSocket connection');
       return;
     }
 
-    const sellerId = productInfo?.sellerId || bookInfo?.sellerId;
+    const sellerId = bookInfo?.sellerId;
 
     const message = {
       content,
       sender_id: currentUserId,
       receiver_id: sellerId,
-      room_id: bookId
+      room_id: bookId,
+      sender_username: currentUsername
     };
 
     // Send the message through WebSocket

@@ -4,7 +4,7 @@ import { useChat } from '../../hooks/useChat';
 
 const ChatRoom = () => {
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
-  const { messages, sendMessage, currentUserId } = useChat(product_id, other_user_id);
+  const { messages, sendMessage, currentUserId, currentUsername } = useChat(product_id, other_user_id);
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -23,10 +23,11 @@ const ChatRoom = () => {
               key={index} 
               className={`message ${msg.sender_id === currentUserId ? 'message-own' : 'message-other'}`}
             >
-              <div className="message-header">
-                {msg.sender_id === currentUserId 
-                  ? 'You' 
-                  : `User ${msg.sender_id}`}
+              <div className="message-header" data-sender-id={msg.sender_id}>
+                {msg.sender_id === currentUserId
+                  ? currentUsername // Show the current user's username
+                  : msg.sender_username // Show the sender's username for received messages
+                }
               </div>
               <div className="message-content">
                 {msg.content}

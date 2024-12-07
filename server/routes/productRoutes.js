@@ -76,7 +76,6 @@ router.get("/all-books", async (req, res) => {
       SELECT *
       FROM product;
     `);
-    console.log(result.rows);
     res.json(result.rows);
   } catch (error) {
     console.error("Error fetching products:", error);
