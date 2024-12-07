@@ -23,7 +23,7 @@ app.use(express.json());
 // Socket.IO Setup
 let io = new SocketIOServer(server, {
   cors: {
-    origin: ["https://dragon-craigslist.vercel.app", "http://localhost:5173"], // Allow Vercel frontend and localhost
+    origin: ["https://dragon-craigslist.vercel.app"], // Allow Vercel frontend and localhost
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -32,7 +32,7 @@ let io = new SocketIOServer(server, {
 // CORS setup
 app.use(
   cors({
-    origin: ["https://dragon-craigslist.vercel.app", "http://localhost:5173"], // Allow Vercel frontend and localhost for testing
+    origin: ["https://dragon-craigslist.vercel.app"], // Allow Vercel frontend and localhost for testing
     credentials: true, // Allow cookies and credentials
   })
 );
