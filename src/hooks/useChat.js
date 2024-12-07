@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const SOCKET_SERVER_URL = 'http://localhost:3000';
+const SOCKET_SERVER_URL = 'https://dragon-craigslist.onrender.com';
 
 export const useChat = () => {
   const [messages, setMessages] = useState([]);
