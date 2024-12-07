@@ -81,6 +81,10 @@ router.post("/login", async (req, res) => {
       return res.status(401).send("Invalid email or password.");
     }
 
+    if (result.rows[0].is_blocked === true) {
+      return res.status(401).send("Your account is blocked.")
+    }
+
     const user = result.rows[0];
     const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, {
       expiresIn: "1h",
