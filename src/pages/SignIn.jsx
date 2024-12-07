@@ -88,7 +88,7 @@ export default function SignIn() {
           }}
         >
           <img
-            src="/src/assets/drexel.jpg"
+            src="/assets/drexel.jpg"
             alt="Drexel Bridge"
             style={{
               width: "100%",
@@ -135,13 +135,13 @@ export default function SignIn() {
             >
               <Box
                 component="img"
-                src="/src/assets/dragonMascot.png"
+                src="/assets/dragonMascot.png"
                 alt="Dragon Logo"
                 sx={{ width: 120, height: 120, mb: -1 }}
               />
               <Box
                 component="img"
-                src="/src/assets/book.jpg"
+                src="/assets/book.jpg"
                 alt="Dragon Book"
                 sx={{ width: 290, height: 110, mb: 2 }}
               />

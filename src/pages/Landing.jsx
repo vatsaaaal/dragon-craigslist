@@ -89,7 +89,7 @@ export default function LandingPage() {
                         marginLeft: '50px'
                     }}>
                         <img 
-                            src="/src/assets/bookIllustration.png" 
+                            src="/assets/bookIllustration.png" 
                             alt="Illustration" 
                         />
                     </Box>
