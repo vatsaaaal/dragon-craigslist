@@ -34,7 +34,7 @@ export const useChat = () => {
   useEffect(() => {
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
     const bookId = bookInfo?.bookId;
-    const otherUserId = bookInfo.sellerId;
+    const otherUserId = bookInfo?.sellerId;
 
     const fetchHistoricalMessages = async () => {
       try {
@@ -43,6 +43,7 @@ export const useChat = () => {
           withCredentials: true,
         });
         setMessages(response.data); // Set historical messages
+        console.log(response.data)
       } catch (error) {
         console.error('Error fetching historical messages:', error.message);
       }
@@ -55,10 +56,9 @@ export const useChat = () => {
 
   // Set up WebSocket connection and join the room
   useEffect(() => {
-    const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
 
-    const room_id = productInfo?.product_id || bookInfo?.bookId || 1;
+    const room_id = bookInfo?.bookId;
 
     // Ensure required variables are available
     if (!currentUserId || !bookInfo || !bookInfo.bookId) return;
@@ -94,12 +94,12 @@ export const useChat = () => {
 
     const bookId = productInfo?.product_id || bookInfo?.bookId;
 
-    if (!bookInfo || !bookInfo.bookId || !socket) {
+    if (!bookInfo || !bookInfo.bookId ) {
       console.error('Cannot send message: Missing bookId or WebSocket connection');
       return;
     }
 
-    const sellerId = productInfo?.sellerId || bookInfo?.sellerId;
+    const sellerId = bookInfo?.sellerId;
 
     const message = {
       content,

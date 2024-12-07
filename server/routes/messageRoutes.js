@@ -20,16 +20,28 @@ router.post("/", getUserIdFromToken, async (req, res) => {
   }
 });
 
-// Get user the account have talked with
 router.get("/past_product", getUserIdFromToken, async (req, res) => {
-  const user_id = res.locals.user_id;
+  const user_id = res.locals.user_id; // Extract user ID from the token
+  //const { product_id } = req.query; // Extract product ID from query parameters
 
   try {
     const result = await client.query(
-      `SELECT DISTINCT product_id
-       FROM message
-       WHERE sender_id = $1 OR receiver_id = $1`,
-      [user_id]
+      `SELECT DISTINCT
+        p.id AS product_id,
+        seller.user_id AS seller_id,
+        buyer.user_id AS buyer_id
+      FROM
+        product p
+      JOIN
+        "user" seller ON p.user_id = seller.user_id
+      LEFT JOIN
+        message m ON m.product_id = p.id
+      LEFT JOIN
+        "user" buyer ON m.sender_id = buyer.user_id OR m.receiver_id = buyer.user_id
+      WHERE
+        (seller.user_id = $1 OR buyer.user_id = $1);
+      `,
+      [user_id] // Pass both product_id and user_id as parameters
     );
 
     if (result.rows.length === 0) {
@@ -42,6 +54,7 @@ router.get("/past_product", getUserIdFromToken, async (req, res) => {
     return res.status(500).send("Error retrieving products.");
   }
 });
+
 
 // Get messages based on user id
 router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) => {

@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
+import ChatList from "./pages/Chat/ChatList";
 import ChatPage from "./pages/Chat/ChatPage";
 import ChatRoom from "./pages/Chat/ChatRoom";
 import Registration from "./pages/Registration";
@@ -18,7 +19,7 @@ function App() {
     <Router>
       <Routes>
       <Route path="/chatbox/:product_id/" element={<ChatPage />} />
-        <Route path="/chatbox/" element={<ChatRoom />} />
+        <Route path="/chatbox/" element={<ChatList />} />
         <Route path="/register" element={<Registration />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="admin/dashboard" element={<AdminDashboard />} />
