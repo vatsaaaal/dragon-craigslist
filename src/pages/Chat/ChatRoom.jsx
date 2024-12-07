@@ -14,6 +14,17 @@ const ChatRoom = () => {
     }
   };
 
+  const getMessageStyle = (senderId) => {
+    const colors = {
+      1: { backgroundColor: '#ffe082', color: '#000' }, // Yellow
+      2: { backgroundColor: '#c8e6c9', color: '#000' }, // Green
+      3: { backgroundColor: '#d1c4e9', color: '#000' }, // Purple
+      // Default style
+      default: { backgroundColor: '#f5f5f5', color: '#000' },
+    };
+    return colors[senderId] || colors.default;
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-room">
@@ -23,10 +34,11 @@ const ChatRoom = () => {
               key={index} 
               className={`message ${msg.sender_id === currentUserId ? 'message-own' : 'message-other'}`}
             >
-              <div className="message-header">
-                {msg.sender_id === currentUserId 
-                  ? 'You' 
-                  : `User ${msg.sender_id}`}
+              <div className="message-header" data-sender-id={msg.sender_id}>
+                {msg.sender_id === currentUserId
+                  ? msg.sender_username // Show "You" for the current user
+                  : msg.receiver_username // Show sender's name for others
+                }
               </div>
               <div className="message-content">
                 {msg.content}

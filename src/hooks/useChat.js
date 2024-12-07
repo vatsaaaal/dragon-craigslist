@@ -43,7 +43,6 @@ export const useChat = () => {
           withCredentials: true,
         });
         setMessages(response.data); // Set historical messages
-        console.log(response.data)
       } catch (error) {
         console.error('Error fetching historical messages:', error.message);
       }

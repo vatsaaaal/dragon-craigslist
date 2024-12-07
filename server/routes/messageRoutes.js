@@ -29,7 +29,9 @@ router.get("/past_product", getUserIdFromToken, async (req, res) => {
       `SELECT DISTINCT
         p.id AS product_id,
         seller.user_id AS seller_id,
-        buyer.user_id AS buyer_id
+        seller.username AS seller_username,
+        buyer.user_id AS buyer_id,
+        buyer.username AS buyer_username
       FROM
         product p
       JOIN
@@ -65,21 +67,25 @@ router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) =>
   try {
     const result = await client.query(
       `SELECT 
-          id,
-          content,
-          created,
-          sender_id,
-          receiver_id,
-          product_id
-      FROM message
+          m.id,
+          m.content,
+          m.created,
+          m.sender_id,
+          sender.username AS sender_username,
+          m.receiver_id,
+          receiver.username AS receiver_username,
+          m.product_id
+      FROM message m
+      JOIN "user" sender ON m.sender_id = sender.user_id
+      JOIN "user" receiver ON m.receiver_id = receiver.user_id
       WHERE 
-          product_id = $1
+          m.product_id = $1
           AND (
-              (sender_id = $2 AND receiver_id = $3) OR 
-              (sender_id = $3 AND receiver_id = $2)
+              (m.sender_id = $2 AND m.receiver_id = $3) OR 
+              (m.sender_id = $3 AND m.receiver_id = $2)
           )
       ORDER BY 
-          created ASC;`,
+          m.created ASC;`,
       [product_id, user_id, other_user_id]
     );
 

@@ -62,16 +62,15 @@ const ChatList = () => {
 
   return (
     <div className="chat-list-container">
-      <h3>Products You’ve Interacted With</h3>
-      {currentUserId && <p>Welcome, User {currentUserId}</p>}
+      <h3>Products Interested In</h3>
       {error && <p className="error-message">{error}</p>}
       <div className="product-grid">
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.product_id} className="product-card">
               <h4>Product ID: {product.product_id}</h4>
-              <p>Seller ID: {product.seller_id}</p>
-              <p>Buyer ID: {product.buyer_id}</p>
+              <p>Seller: {product.seller_username}</p>
+              <p>Buyer: {product.buyer_username}</p>
               <button
                 className="chat-link"
                 onClick={() => handleChatClick(product.product_id, product.seller_id, product.buyer_id)}
