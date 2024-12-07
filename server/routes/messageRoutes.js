@@ -20,16 +20,30 @@ router.post("/", getUserIdFromToken, async (req, res) => {
   }
 });
 
-// Get user the account have talked with
 router.get("/past_product", getUserIdFromToken, async (req, res) => {
-  const user_id = res.locals.user_id;
+  const user_id = res.locals.user_id; // Extract user ID from the token
+  //const { product_id } = req.query; // Extract product ID from query parameters
 
   try {
     const result = await client.query(
-      `SELECT DISTINCT product_id
-       FROM message
-       WHERE sender_id = $1 OR receiver_id = $1`,
-      [user_id]
+      `SELECT DISTINCT
+        p.id AS product_id,
+        seller.user_id AS seller_id,
+        seller.username AS seller_username,
+        buyer.user_id AS buyer_id,
+        buyer.username AS buyer_username
+      FROM
+        product p
+      JOIN
+        "user" seller ON p.user_id = seller.user_id
+      LEFT JOIN
+        message m ON m.product_id = p.id
+      LEFT JOIN
+        "user" buyer ON m.sender_id = buyer.user_id OR m.receiver_id = buyer.user_id
+      WHERE
+        (seller.user_id = $1 OR buyer.user_id = $1);
+      `,
+      [user_id] // Pass both product_id and user_id as parameters
     );
 
     if (result.rows.length === 0) {
@@ -43,6 +57,7 @@ router.get("/past_product", getUserIdFromToken, async (req, res) => {
   }
 });
 
+
 // Get messages based on user id
 router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) => {
   const user_id = res.locals.user_id;
@@ -52,26 +67,30 @@ router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) =>
   try {
     const result = await client.query(
       `SELECT 
-          id,
-          content,
-          created,
-          sender_id,
-          receiver_id,
-          product_id
-      FROM message
+          m.id,
+          m.content,
+          m.created,
+          m.sender_id,
+          sender.username AS sender_username,
+          m.receiver_id,
+          receiver.username AS receiver_username,
+          m.product_id
+      FROM message m
+      JOIN "user" sender ON m.sender_id = sender.user_id
+      JOIN "user" receiver ON m.receiver_id = receiver.user_id
       WHERE 
-          product_id = $1
+          m.product_id = $1
           AND (
-              (sender_id = $2 AND receiver_id = $3) OR 
-              (sender_id = $3 AND receiver_id = $2)
+              (m.sender_id = $2 AND m.receiver_id = $3) OR 
+              (m.sender_id = $3 AND m.receiver_id = $2)
           )
       ORDER BY 
-          created ASC;`,
+          m.created ASC;`,
       [product_id, user_id, other_user_id]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No messages found for this user." });
+      return res.status(201).json(result.rows);
     }
 
     return res.json(result.rows);

@@ -34,7 +34,7 @@ export const useChat = () => {
   useEffect(() => {
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
     const bookId = bookInfo?.bookId;
-    const otherUserId = bookInfo.sellerId;
+    const otherUserId = bookInfo?.sellerId;
 
     const fetchHistoricalMessages = async () => {
       try {
@@ -55,10 +55,9 @@ export const useChat = () => {
 
   // Set up WebSocket connection and join the room
   useEffect(() => {
-    const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
 
-    const bookId = productInfo?.product_id || bookInfo?.bookId;
+    const room_id = bookInfo?.bookId;
 
     // Ensure required variables are available
     if (!currentUserId || !bookInfo || !bookInfo.bookId) return;
@@ -70,8 +69,8 @@ export const useChat = () => {
     });
     setSocket(newSocket);
 
-    // Join the room with bookId and userId
-    newSocket.emit('join_room', { bookId: bookId, userId: currentUserId });
+    // Join the room room_id
+    newSocket.emit('join_room', { room_id });
 
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
@@ -94,12 +93,12 @@ export const useChat = () => {
 
     const bookId = productInfo?.product_id || bookInfo?.bookId;
 
-    if (!bookInfo || !bookInfo.bookId || !socket) {
+    if (!bookInfo || !bookInfo.bookId ) {
       console.error('Cannot send message: Missing bookId or WebSocket connection');
       return;
     }
 
-    const sellerId = productInfo?.sellerId || bookInfo?.sellerId;
+    const sellerId = bookInfo?.sellerId;
 
     const message = {
       content,

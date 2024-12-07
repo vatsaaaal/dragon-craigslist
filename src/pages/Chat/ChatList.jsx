@@ -1,31 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { fetchUserId } from "../../hooks/useFetchUserId";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import "./ChatList.css";
 
 const ChatList = () => {
   const [products, setProducts] = useState([]); // State to store products
   const [currentUserId, setCurrentUserId] = useState(null); // State to store the current user ID
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // Hook for programmatic navigation
 
   // Fetch user ID and associated products when component mounts
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // Fetch current user ID
         const user = await fetchUserId();
         if (user) {
-          setCurrentUserId(user.user_id); // Store user ID in state
+          setCurrentUserId(user.user_id);
 
-          // Fetch products the account has contacted the seller with
+          // Fetch products associated with the user
           const response = await axios.get(`http://localhost:3000/messages/past_product`, {
             withCredentials: true,
           });
 
           if (response.data && Array.isArray(response.data)) {
-            setProducts(response.data); // Store product data in state
-
-            // Store products in sessionStorage for reuse in other components
+            setProducts(response.data);
             sessionStorage.setItem("products", JSON.stringify(response.data));
           } else {
             console.error("Failed to retrieve products from server");
@@ -40,24 +39,50 @@ const ChatList = () => {
     fetchProducts();
   }, []);
 
+  const handleChatClick = (product_id, seller_id, buyer_id) => {
+    // Determine the receiver ID (it should not be the current user ID)
+    const receiver_id = seller_id === currentUserId ? buyer_id : seller_id;
+  
+    if (receiver_id === currentUserId) {
+      setError("You cannot send a message to yourself.");
+      console.warn("Navigation prevented: User is trying to message themselves.");
+      return; // Prevent further execution
+    }
+  
+    // Set up bookInfo object in sessionStorage
+    sessionStorage.setItem("bookInfo", JSON.stringify({ bookId: product_id, sellerId: receiver_id }));
+    console.log("Book ID:", product_id);
+    console.log("Receiver ID:", receiver_id);
+  
+    // Navigate to the chatbox page
+    navigate(`/chatbox/${product_id}`);
+  };
+  
+
+
   return (
-    <div className="product-list">
-      <h3>Products You’ve Interacted With</h3>
-      {currentUserId && <p>Welcome, User {currentUserId}</p>}
+    <div className="chat-list-container">
+      <h3>Products Interested In</h3>
       {error && <p className="error-message">{error}</p>}
-      <ul>
+      <div className="product-grid">
         {products.length > 0 ? (
           products.map((product) => (
-            <li key={product.product_id}>
-              <Link to={`/chatbox/${product.product_id}`}>
-                <strong>{product.product_name}</strong> (Product ID: {product.product_id})
-              </Link>
-            </li>
+            <div key={product.product_id} className="product-card">
+              <h4>Product ID: {product.product_id}</h4>
+              <p>Seller: {product.seller_username}</p>
+              <p>Buyer: {product.buyer_username}</p>
+              <button
+                className="chat-link"
+                onClick={() => handleChatClick(product.product_id, product.seller_id, product.buyer_id)}
+              >
+                Go to Chat
+              </button>
+            </div>
           ))
         ) : (
           !error && <p>No products available.</p>
         )}
-      </ul>
+      </div>
     </div>
   );
 };
