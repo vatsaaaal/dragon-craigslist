@@ -19,7 +19,7 @@ const ChatList = () => {
           setCurrentUserId(user.user_id);
 
           // Fetch products associated with the user
-          const response = await axios.get(`http://localhost:3000/messages/past_product`, {
+          const response = await axios.get(`https://dragon-craigslist.onrender.com/past_product`, {
             withCredentials: true,
           });
 
