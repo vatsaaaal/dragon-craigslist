@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
-import { client } from "../../server.js";
-import { config } from "../../config.js";
+import { client } from "../../server/server.js";
 
 export default async function handler(req, res) {
   const { email, password } = req.body;
-  const JWT_SECRET = config.JWT_SECRET;
+  const JWT_SECRET = process.env.JWT_SECRET;
 
   try {
     const result = await client.query(
