@@ -1,55 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { fetchUserId } from "../../hooks/useFetchUserId";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const ChatList = () => {
-  const [users, setUsers] = useState([]); // State to store user data
+  const [products, setProducts] = useState([]); // State to store products
   const [currentUserId, setCurrentUserId] = useState(null); // State to store the current user ID
   const [error, setError] = useState(null);
 
-  // Fetch user ID and associated users when component mounts
+  // Fetch user ID and associated products when component mounts
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchProducts = async () => {
       try {
         // Fetch current user ID
         const user = await fetchUserId();
         if (user) {
           setCurrentUserId(user.user_id); // Store user ID in state
 
-          // Fetch users the account has talked with
-          const response = await axios.get(`http://localhost:3000/messages/past_user`, {
+          // Fetch products the account has contacted the seller with
+          const response = await axios.get(`http://localhost:3000/messages/past_product`, {
             withCredentials: true,
           });
 
           if (response.data && Array.isArray(response.data)) {
-            setUsers(response.data); // Store user data in state
+            setProducts(response.data); // Store product data in state
+
+            // Store products in sessionStorage for reuse in other components
+            sessionStorage.setItem("products", JSON.stringify(response.data));
           } else {
-            console.error("Failed to retrieve users from server");
+            console.error("Failed to retrieve products from server");
           }
         }
       } catch (error) {
-        setError("Error fetching users.");
-        console.error("Error fetching users:", error);
+        setError("Error fetching products.");
+        console.error("Error fetching products:", error);
       }
     };
 
-    fetchUsers();
+    fetchProducts();
   }, []);
 
   return (
-    <div className="user-list">
-      <h3>Users You’ve Talked With</h3>
+    <div className="product-list">
+      <h3>Products You’ve Interacted With</h3>
       {currentUserId && <p>Welcome, User {currentUserId}</p>}
       {error && <p className="error-message">{error}</p>}
       <ul>
-        {users.length > 0 ? (
-          users.map((user) => (
-            <li key={user.user_id}>
-              <strong>{user.username}</strong> (ID: {user.user_id})
+        {products.length > 0 ? (
+          products.map((product) => (
+            <li key={product.product_id}>
+              <Link to={`/chatbox/${product.product_id}`}>
+                <strong>{product.product_name}</strong> (Product ID: {product.product_id})
+              </Link>
             </li>
           ))
         ) : (
-          !error && <p>No users available.</p>
+          !error && <p>No products available.</p>
         )}
       </ul>
     </div>

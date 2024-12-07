@@ -5,17 +5,20 @@ import {
     CardHeader,
     Typography,
     Box,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from '@mui/material';
 import { BookCopy, Users, SquareKanban, UserRoundX } from 'lucide-react';
 import PageHeader from '../../components/Header';
 import { LineChart } from '@mui/x-charts/LineChart';
 import axios from "axios";
-import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
+import { Gauge } from '@mui/x-charts/Gauge';
 
-
-const browserData = [
-    { browser: 'Chrome', sessions: 1200, bounceRate: '25%', transactions: 200 },
-];
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
 
 const cardStyle = {
     borderRadius: '5px',
@@ -41,11 +44,16 @@ export default function AdminDashboard() {
     const [listOfProducts, setListOfProducts] = useState([]);
     const [listOfNewAccounts, setListOfNewAccounts] = useState([]);
     const [listOfBlockedUsers, setListOfBlockedUsers]= useState([]);
+    const [selectedUserId, setSelectedUserId] = useState(null);
+
+    const [openModal, setOpenModal] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchListOfUsers = async () => {
             try {
                 let response = await axios.get("http://localhost:3000/admin/all-users");
+                console.log("response users: ", response);
                 if (!response.status === 200) {
                     throw new Error(`HTTP response error! status: ${response.status}`)
                 }
@@ -62,6 +70,7 @@ export default function AdminDashboard() {
         const fetchListOfProducts = async () => {
             try {
                 let response = await axios.get("http://localhost:3000/admin/all-products");
+                console.log("response products: ", response)
                 if (!response.status === 200) {
                     throw new Error(`HTTP response error! status: ${response.status}`)
                 }
@@ -74,9 +83,45 @@ export default function AdminDashboard() {
         fetchListOfProducts();
     }, []);
 
+
+    // Handle Deactivate Users
+    // const toggleBlockUser = async (userId, currentStatus) => {
+    //     console.log("userId: ", userId);
+    //     console.log("currentStatus: ", currentStatus);
+    //     setLoading(true); 
+    //     try {
+    //         const newStatus = !currentStatus;
+    //         await axios.put(`http://localhost:3000/admin/block-user/${userId}`, { status: false });
+    
+    //         setListOfUsers(listOfUsers.map(user =>
+    //             user.user_id === userId ? { ...user, status: newStatus } : user
+    //         ));
+    //         setOpenModal(false); 
+    
+    //     } catch (error) {
+    //         console.error('Error updating user status:', error);
+    //     } finally {
+    //         setLoading(false);  
+    //     }
+    // };
     const toggleBlockUser = async (userId, currentStatus) => {
-        console.log("Blocked!");
+    try {
+            const response = await axios.put(`http://localhost:3000/admin/block-user/${userId}`, {
+                is_blocked: !currentStatus,
+            });
+            const updatedUser = response.data;
+
+            // Update the local state with the modified user
+            setListOfUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user.user_id === updatedUser.user_id ? updatedUser : user
+                )
+            );
+        } catch (error) {
+            console.error("Error updating user block status:", error);
+        }
     };
+    
 
     const numOfBlockedUsers = listOfUsers.filter(user => user.is_blocked).length;
     
@@ -92,8 +137,25 @@ export default function AdminDashboard() {
         setListOfNewAccounts(usersCreatedToday); 
     }, [listOfUsers]);
 
-    // Inventory Cost 
-    let inventoryCost = listOfProducts.reduce((total, product) => total + (product.price || 0), 0);
+
+    // Inventory Cost
+    function sumOfCost() {
+        let totalCost = 0
+        for (let i=0; i < listOfProducts.length; i++) {
+            let currentCost = Number(listOfProducts[i].price);
+            totalCost += currentCost
+        }
+        return totalCost;
+    }
+
+    const handleConfirmationModal = (userId) => {
+        setSelectedUserId(userId);
+        setOpenModal(true);
+    }
+
+    const onCancel = () => {
+        setOpenModal(false);
+    }
 
     return (
         <Box p={1}>
@@ -121,7 +183,8 @@ export default function AdminDashboard() {
                                 <Box>
                                     <Typography variant="body2" color="textSecondary">New Accounts</Typography>
                                     <Typography variant="h4" fontWeight="bold">{numOfNewUsersPerDay}</Typography>
-                                    <Typography variant="body2" color="green">+{numOfNewUsersPerDay} Daily New Users Account</Typography>                                </Box>
+                                    <Typography variant="body2" color="green">+{numOfNewUsersPerDay} Daily New Users Account</Typography>                                
+                                </Box>
                                 <Users size={32} color="#2196f3" />
                             </Box>
                         </CardContent>
@@ -145,8 +208,8 @@ export default function AdminDashboard() {
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="body2" color="textSecondary">Inventory Cost</Typography>
-                                    <Typography variant="h4" fontWeight="bold">${inventoryCost}</Typography>
-                                    <Typography variant="body2" color="green">+${inventoryCost} Products Daily</Typography>
+                                    <Typography variant="h4" fontWeight="bold">${sumOfCost()}</Typography>
+                                    <Typography variant="body2" color="green">+${sumOfCost()} Products Daily</Typography>
                                 </Box>
                                 <SquareKanban size={32} color="#2196f3" />
                             </Box>
@@ -174,6 +237,75 @@ export default function AdminDashboard() {
                             </Box>
                             <Box>
                                 <Gauge width={100} height={100} value={listOfUsers.length} startAngle={-90} endAngle={90} />
+                            </Box>
+                        </CardContent>
+                    </Card>
+
+                    <Card sx={{mt: 4}}>
+                        <CardHeader title="Users Management" />
+                        <CardContent>
+                            <Box sx={{ overflowX: 'auto' }}>
+                                <table style={{ width: '100%' }}>
+                                    <thead>
+                                        <tr>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>User ID</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Full Name</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Username</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Password</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Phone Number</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Phone Visible</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Create Date</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>User Status</th>
+                                        <th style={{ padding: '16px', textAlign: 'left' }}>Block Users</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {listOfUsers.map((user) => (
+                                        <tr key={user.user_id}>
+                                            <td style={{ padding: '16px' }}>{user.user_id}</td>
+                                            <td style={{ padding: '16px' }}>{user.first_name} {user.last_name}</td>
+                                            <td style={{ padding: '16px' }}>{user.username}</td>
+                                            <td style={{ padding: '16px' }}>{user.password}</td>
+                                            <td style={{ padding: '16px' }}>{user.phone}</td>
+                                            <td style={{ padding: '16px' }}>
+                                                {user.phone_visibility? user.phone_visibility: <CancelRoundedIcon sx={{color: 'red'}} />}
+                                            </td>
+                                            <td style={{ padding: '16px' }}>${user.created_at}</td>
+                                            <td style={{ padding: '16px' }}>
+                                                {user.is_blocked? <CancelRoundedIcon sx={{color: 'red'}} />: <CheckCircleRoundedIcon sx={{color: 'green'}} />}
+                                            </td>
+                                            <td style={{ padding: '16px' }}>
+                                                <Button 
+                                                    onClick={() => handleConfirmationModal(user.user_id)}
+                                                    sx={{
+                                                        color: 'white', 
+                                                        backgroundColor: 'red', 
+                                                        borderRadius: '5px'
+                                                    }}>
+                                                    X
+                                                </Button>
+
+                                                <Dialog open={openModal} onClose={onCancel}>
+                                                    <DialogTitle>Block User: A ?</DialogTitle>
+                                                    <DialogContent>
+                                                        The User Account will be disabled from the system
+                                                    </DialogContent>
+                                                    <DialogActions>
+                                                        <Button onClick={onCancel}>Cancel</Button>
+                                                        <Button 
+                                                            variant="contained" 
+                                                            color="error"
+                                                            onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)} 
+                                                            >
+                                                                Block Account
+                                                        </Button>
+                                                    </DialogActions>
+                                                </Dialog>
+                                            </td>
+                                        </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </Box>
                         </CardContent>
                     </Card>
@@ -237,28 +369,6 @@ export default function AdminDashboard() {
                                         </tr>
                                         ))}
                                     </tbody>
-                                </table>
-                            </Box>
-                        </CardContent>
-                    </Card>
-
-                    <Card sx={{ mt: 4 }}>
-                        <CardHeader title="Blocked Users Report" />
-                        <CardContent>
-                            <Box sx={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%' }}>
-                                <thead>
-                                    <tr>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Browser</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {browserData.map((item, index) => (
-                                    <tr key={index}>
-                                        <td style={{ padding: '16px' }}>{item.browser}</td>
-                                    </tr>
-                                    ))}
-                                </tbody>
                                 </table>
                             </Box>
                         </CardContent>

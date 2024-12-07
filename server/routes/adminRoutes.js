@@ -24,18 +24,52 @@ router.get("/all-products", async (req, res) => {
     }
 })
 
-router.post("/block-user/:id", async (req, res) => {
-    const userId = parseInt(req.params.id);
+// router.put("/block-user/:id", async (req, res) => {
+//     console.log("req: ", req);
+
+//     const userId = parseInt(req.params);
+//     console.log(userId);
+//     const { is_blocked } = req.body;
+//     console.log(is_blocked);
+
+
+//     try {
+//         const result = await client.query(`
+//         UPDATE "user"
+//         SET is_blocked = $1
+//         WHERE user_id = $2 RETURNING *
+//         `, [is_blocked, userId]
+//         );
+//     } catch(error) {
+//         console.error("Error updating user block status:", error);
+//         res.status(500).json({ message: "Error updating user status." });
+//     }
+// });
+router.put("/block-user/:id", async (req, res) => {
+    const userId = parseInt(req.params.id, 10);
     const { is_blocked } = req.body;
 
+    if (typeof is_blocked !== "boolean") {
+        return res.status(400).json({ message: "Invalid value for 'is_blocked' field." });
+    }
+
     try {
-        const result = await client.query(`
-        UPDATE "user"
-        SET is_blocked = $1
-        WHERE user_id = $2 RETURNING *
-        `, [is_blocked, userId]
+        const result = await client.query(
+            `
+            UPDATE "user"
+            SET is_blocked = $1
+            WHERE user_id = $2
+            RETURNING *;
+            `,
+            [is_blocked, userId]
         );
-    } catch(error) {
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        res.status(200).json(result.rows[0]); // Return the updated user
+    } catch (error) {
         console.error("Error updating user block status:", error);
         res.status(500).json({ message: "Error updating user status." });
     }
