@@ -47,7 +47,7 @@ async function initializeDatabaseConnection() {
 
   // for deployment
   const dbConfig = {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: config.DATABASE_URL,
     ssl: false,
   };
 
