@@ -58,7 +58,7 @@ export const useChat = () => {
     const productInfo = JSON.parse(sessionStorage.getItem('productInfo'));
     const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
 
-    const bookId = productInfo?.product_id || bookInfo?.bookId;
+    const room_id = productInfo?.product_id || bookInfo?.bookId || 1;
 
     // Ensure required variables are available
     if (!currentUserId || !bookInfo || !bookInfo.bookId) return;
@@ -70,8 +70,8 @@ export const useChat = () => {
     });
     setSocket(newSocket);
 
-    // Join the room with bookId and userId
-    newSocket.emit('join_room', { bookId: bookId, userId: currentUserId });
+    // Join the room room_id
+    newSocket.emit('join_room', { room_id });
 
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {

@@ -71,7 +71,7 @@ router.get("/past_messages/:product_id", getUserIdFromToken, async (req, res) =>
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: "No messages found for this user." });
+      return res.status(201).json(result.rows);
     }
 
     return res.json(result.rows);

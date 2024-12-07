@@ -78,9 +78,8 @@ function Book() {
     console.log("Current User ID:", currentUserId, "Book Owner ID:", book?.user_id);
 
     if (currentUserId && book?.id) {
-      const targetUrl = `http://localhost:5173/chatbox/${book.id}`;
       sessionStorage.setItem('bookInfo', JSON.stringify({ bookId: book.id, sellerId: book.user_id }));
-      window.location.href = targetUrl;
+      navigate(`/chatbox/${book.id}`);
     } else {
       console.error("User ID or book information is missing.");
     }
