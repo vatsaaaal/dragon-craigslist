@@ -14,7 +14,7 @@ export const useChat = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/users/me', {
+        const response = await axios.get('https://dragon-craigslist.onrender.com/users/me', {
           withCredentials: true,
         });
 
@@ -40,7 +40,7 @@ export const useChat = () => {
 
     const fetchHistoricalMessages = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/messages/past_messages/${bookId}`, {
+        const response = await axios.get(`https://dragon-craigslist.onrender.com/messages/past_messages/${bookId}`, {
           params: { other_user_id: otherUserId },
           withCredentials: true,
         });
@@ -117,7 +117,7 @@ export const useChat = () => {
     // Optionally store the message on the server
     try {
       const response = await axios.post(
-        'http://localhost:3000/messages/',
+        'https://dragon-craigslist.onrender.com/messages/',
         message,
         { withCredentials: true }
       );

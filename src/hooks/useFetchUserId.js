@@ -3,7 +3,7 @@ import axios from "axios";
 
 export const fetchUserId = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/users/me", {
+      const response = await axios.get("https://dragon-craigslist.onrender.com/users/me", {
         withCredentials: true, // Include authentication cookies
       });
   
