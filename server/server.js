@@ -8,6 +8,7 @@ import { config } from "./config.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import { setupWebSocket } from "./handlers/websocket.js";
 
 const { Client } = pkg;
@@ -61,6 +62,7 @@ initializeDatabaseConnection().catch((error) => {
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/messages", messageRoutes);
+app.use("/admin", adminRoutes);
 
 // WebSocket setup
 setupWebSocket(io, client);
