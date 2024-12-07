@@ -14,7 +14,7 @@ export function setupWebSocket(io, client) {
 
     // Handle send_message event
     socket.on("send_message", (data) => {
-      const { content, sender_id, room_id } = data;
+      const { content, sender_id, room_id, sender_username } = data;
 
       if (!content || !sender_id || !room_id) {
         console.error("Invalid data for send_message event", data);
@@ -25,7 +25,7 @@ export function setupWebSocket(io, client) {
       handleSendMessage(socket, io, client, data);
 
       // Broadcast message to the room
-      io.to(room_id).emit("receive_message", { sender_id, content });
+      io.to(room_id).emit("receive_message", { sender_id, content, sender_username });
     });
 
     // Handle user disconnect

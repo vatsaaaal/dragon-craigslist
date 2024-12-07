@@ -8,6 +8,7 @@ export const useChat = () => {
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUsername, setCurrentUsername] = useState('');
 
   // Fetch the user ID when the component is mounted
   useEffect(() => {
@@ -19,6 +20,7 @@ export const useChat = () => {
 
         if (response.data && response.data.user_id) {
           setCurrentUserId(response.data.user_id);
+          setCurrentUsername(response.data.username);
         } else {
           console.error('Failed to retrieve userId from server');
         }
@@ -74,6 +76,7 @@ export const useChat = () => {
 
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
+      console.log('Received message:', message);
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -104,7 +107,8 @@ export const useChat = () => {
       content,
       sender_id: currentUserId,
       receiver_id: sellerId,
-      room_id: bookId
+      room_id: bookId,
+      sender_username: currentUsername
     };
 
     // Send the message through WebSocket
