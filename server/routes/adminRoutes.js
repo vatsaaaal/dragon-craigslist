@@ -24,27 +24,7 @@ router.get("/all-products", async (req, res) => {
     }
 })
 
-// router.put("/block-user/:id", async (req, res) => {
-//     console.log("req: ", req);
 
-//     const userId = parseInt(req.params);
-//     console.log(userId);
-//     const { is_blocked } = req.body;
-//     console.log(is_blocked);
-
-
-//     try {
-//         const result = await client.query(`
-//         UPDATE "user"
-//         SET is_blocked = $1
-//         WHERE user_id = $2 RETURNING *
-//         `, [is_blocked, userId]
-//         );
-//     } catch(error) {
-//         console.error("Error updating user block status:", error);
-//         res.status(500).json({ message: "Error updating user status." });
-//     }
-// });
 router.put("/block-user/:id", async (req, res) => {
     const userId = parseInt(req.params.id, 10);
     const { is_blocked } = req.body;

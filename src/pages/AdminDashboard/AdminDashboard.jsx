@@ -85,25 +85,6 @@ export default function AdminDashboard() {
 
 
     // Handle Deactivate Users
-    // const toggleBlockUser = async (userId, currentStatus) => {
-    //     console.log("userId: ", userId);
-    //     console.log("currentStatus: ", currentStatus);
-    //     setLoading(true); 
-    //     try {
-    //         const newStatus = !currentStatus;
-    //         await axios.put(`http://localhost:3000/admin/block-user/${userId}`, { status: false });
-    
-    //         setListOfUsers(listOfUsers.map(user =>
-    //             user.user_id === userId ? { ...user, status: newStatus } : user
-    //         ));
-    //         setOpenModal(false); 
-    
-    //     } catch (error) {
-    //         console.error('Error updating user status:', error);
-    //     } finally {
-    //         setLoading(false);  
-    //     }
-    // };
     const toggleBlockUser = async (userId, currentStatus) => {
     try {
             const response = await axios.put(`http://localhost:3000/admin/block-user/${userId}`, {
