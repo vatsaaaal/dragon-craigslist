@@ -29,7 +29,7 @@ function Book() {
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/products/${id}`,
+          `https://dragon-craigslist.onrender.com/products/${id}`,
           {
             withCredentials: true,
           }
@@ -60,7 +60,7 @@ function Book() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3000/products/${id}`, {
+      await axios.delete(`https://dragon-craigslist.onrender.com/products/${id}`, {
         withCredentials: true,
       });
       setMessage("Product deleted successfully!");

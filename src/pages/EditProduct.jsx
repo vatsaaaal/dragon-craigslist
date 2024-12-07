@@ -35,7 +35,7 @@ function EditProduct() {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/products/${id}`,
+          `https://dragon-craigslist.onrender.com/products/${id}`,
           {
             withCredentials: true,
           }
@@ -77,7 +77,7 @@ function EditProduct() {
     });
 
     try {
-      await axios.put(`http://localhost:3000/products/${id}`, data, {
+      await axios.put(`https://dragon-craigslist.onrender.com//products/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
