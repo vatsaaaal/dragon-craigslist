@@ -12,7 +12,8 @@ if (process.env.NODE_ENV === "production") {
     PG_PASSWORD: process.env.PG_PASSWORD,
     PG_PORT: process.env.PG_PORT,
     DATABASE_URL: process.env.DATABASE_URL,
-    FRONTEND_URL: process.env.FRONTEND_URL, // Add FRONTEND_URL when known
+    FRONTEND_URL: process.env.FRONTEND_URL,
+    JWT_SECRET: process.env.JWT_SECRET
   };
 } else {
   // Load env.json for local development
