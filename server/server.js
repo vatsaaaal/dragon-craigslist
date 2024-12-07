@@ -37,12 +37,18 @@ app.use(express.json());
 let client;
 
 async function initializeDatabaseConnection() {
+  // const dbConfig = {
+  //   user: config.PG_USER,
+  //   host: config.PG_HOST,
+  //   database: config.PG_DATABASE,
+  //   password: config.PG_PASSWORD,
+  //   port: config.PG_PORT,
+  // };
+
+  // for deployment
   const dbConfig = {
-    user: config.PG_USER,
-    host: config.PG_HOST,
-    database: config.PG_DATABASE,
-    password: config.PG_PASSWORD,
-    port: config.PG_PORT,
+    connectionString: process.env.DATABASE_URL,
+    ssl: false,
   };
 
   client = new Client(dbConfig);
