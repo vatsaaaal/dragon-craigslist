@@ -10,6 +10,16 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    TableContainer,
+    Paper,
+    TableRow,
+    Table,
+    TableHead,
+    TableCell,
+    TableBody,
+    Avatar,
+    Switch,
+    styled
 } from '@mui/material';
 import { BookCopy, Users, SquareKanban, UserRoundX } from 'lucide-react';
 import PageHeader from '../../components/Header';
@@ -30,13 +40,63 @@ const cardStyle = {
     }
 };
 
-    const contentStyle = {
-        height: '100%',
-        padding: '32px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between'
-    };
+const contentStyle = {
+    height: '100%',
+    padding: '32px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+};
+
+const IOSSwitch = styled((props) => (
+    <Switch disableRipple focusVisibleClassName=".Mui-focusVisible" {...props} />
+  ))(({ theme }) => ({
+    width: 42,
+    height: 26,
+    padding: 0,
+    '& .MuiSwitch-switchBase': {
+      padding: 0,
+      margin: 2,
+      transitionDuration: '300ms',
+      '&.Mui-checked': {
+        transform: 'translateX(16px)',
+        color: '#fff',
+        '& + .MuiSwitch-track': {
+          backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+          opacity: 1,
+          border: 0,
+        },
+        '&.Mui-disabled + .MuiSwitch-track': {
+          opacity: 0.5,
+        },
+      },
+      '&.Mui-focusVisible .MuiSwitch-thumb': {
+        color: '#33cf4d',
+        border: '6px solid #fff',
+      },
+      '&.Mui-disabled .MuiSwitch-thumb': {
+        color: theme.palette.mode === 'dark' ? theme.palette.grey[600] : theme.palette.grey[100],
+      },
+      '&.Mui-disabled + .MuiSwitch-track': {
+        opacity: theme.palette.mode === 'dark' ? 0.3 : 0.7,
+      },
+    },
+    '& .MuiSwitch-thumb': {
+      boxSizing: 'border-box',
+      width: 22,
+      height: 22,
+    },
+    '& .MuiSwitch-track': {
+      borderRadius: 13,
+      backgroundColor: theme.palette.mode === 'dark' ? '#39393D' : '#E9E9EA',
+      opacity: 1,
+      transition: theme.transitions.create(['background-color'], {
+        duration: 500,
+      }),
+    },
+  }));
+
+
 
 
 export default function AdminDashboard() {
@@ -86,7 +146,7 @@ export default function AdminDashboard() {
 
     // Handle Deactivate Users
     const toggleBlockUser = async (userId, currentStatus) => {
-    try {
+        try {
             const response = await axios.put(`http://localhost:3000/admin/block-user/${userId}`, {
                 is_blocked: !currentStatus,
             });
@@ -98,8 +158,28 @@ export default function AdminDashboard() {
                     user.user_id === updatedUser.user_id ? updatedUser : user
                 )
             );
+            onCancel();
         } catch (error) {
             console.error("Error updating user block status:", error);
+        }
+    };
+
+    const toggleBlockPost = async (postId, currentStatus) => {
+        try {
+            const response = await axios.put(`http://localhost:3000/admin/block-post/${postId}`, {
+                is_blocked: !currentStatus,
+            });
+            const updatedPost = response.data;
+
+            // Update the local state with the modified user
+            setListOfProducts((prevPosts) =>
+                prevPosts.map((product) =>
+                    product.id === updatedPost.id ? updatedPost : product
+                )
+            );
+            onCancel();
+        } catch (error) {
+            console.error("Error updating Post block status:", error);
         }
     };
     
@@ -226,67 +306,88 @@ export default function AdminDashboard() {
                         <CardHeader title="Users Management" />
                         <CardContent>
                             <Box sx={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%' }}>
-                                    <thead>
-                                        <tr>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>User ID</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Full Name</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Username</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Password</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Phone Number</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Phone Visible</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Create Date</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>User Status</th>
-                                        <th style={{ padding: '16px', textAlign: 'left' }}>Block Users</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                <TableContainer component={Paper}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>User ID</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Full Name</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Username</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Password</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Phone Number</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Create Date</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}} >User Status</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Block Users</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
                                         {listOfUsers.map((user) => (
-                                        <tr key={user.user_id}>
-                                            <td style={{ padding: '16px' }}>{user.user_id}</td>
-                                            <td style={{ padding: '16px' }}>{user.first_name} {user.last_name}</td>
-                                            <td style={{ padding: '16px' }}>{user.username}</td>
-                                            <td style={{ padding: '16px' }}>{user.password}</td>
-                                            <td style={{ padding: '16px' }}>{user.phone}</td>
-                                            <td style={{ padding: '16px' }}>
-                                                {user.phone_visibility? user.phone_visibility: <CancelRoundedIcon sx={{color: 'red'}} />}
-                                            </td>
-                                            <td style={{ padding: '16px' }}>${user.created_at}</td>
-                                            <td style={{ padding: '16px' }}>
-                                                {user.is_blocked? <CancelRoundedIcon sx={{color: 'red'}} />: <CheckCircleRoundedIcon sx={{color: 'green'}} />}
-                                            </td>
-                                            <td style={{ padding: '16px' }}>
-                                                <Button 
-                                                    onClick={() => handleConfirmationModal(user.user_id)}
-                                                    sx={{
-                                                        color: 'white', 
-                                                        backgroundColor: 'red', 
-                                                        borderRadius: '5px'
-                                                    }}>
-                                                    X
+                                            <TableRow key={user.user_id}>
+                                            
+                                                <TableCell sx={{textAlign: 'center'}}>
+                                                    {user.user_id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Box
+                                                        sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center', // Vertically center the content
+                                                        justifyContent: 'center', // Horizontally center the content
+                                                        gap: 1,
+                                                        }}
+                                                    >
+                                                        <Avatar sx={{ bgcolor: 'orange' }}>
+                                                        {user.first_name[0].toUpperCase()}
+                                                        </Avatar>
+                                                        {`${user.first_name} ${user.last_name}`}
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{user.username}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{user.password}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{user.phone}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{user.created_at}</TableCell>
+                                            <TableCell sx={{textAlign: 'center'}}>
+                                                {user.is_blocked ? (
+                                                <CancelRoundedIcon sx={{ color: 'red' }} />
+                                                ) : (
+                                                <CheckCircleRoundedIcon sx={{ color: 'green' }} />
+                                                )}
+                                            </TableCell>
+                                            <TableCell sx={{textAlign: 'center'}}>
+                                                <Button
+                                                type="button"
+                                                onClick={() => handleConfirmationModal(user.user_id)}
+                                                sx={{
+                                                    color: 'black',
+                                                    borderRadius: '5px',
+                                                    border: '0.5px solid gray'
+                                                }}
+                                                >
+                                                {user.is_blocked? "Reactivate": "Block"}
                                                 </Button>
 
                                                 <Dialog open={openModal} onClose={onCancel}>
-                                                    <DialogTitle>Block User: A ?</DialogTitle>
-                                                    <DialogContent>
-                                                        The User Account will be disabled from the system
-                                                    </DialogContent>
-                                                    <DialogActions>
-                                                        <Button onClick={onCancel}>Cancel</Button>
-                                                        <Button 
-                                                            variant="contained" 
-                                                            color="error"
-                                                            onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)} 
-                                                            >
-                                                                Block Account
-                                                        </Button>
-                                                    </DialogActions>
+                                                <DialogTitle>Block User: {user.first_name}?</DialogTitle>
+                                                <DialogContent>
+                                                    The User Account will be disabled from the system.
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button onClick={onCancel}>Cancel</Button>
+                                                    <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)}
+                                                    >
+                                                    Block Account
+                                                    </Button>
+                                                </DialogActions>
                                                 </Dialog>
-                                            </td>
-                                        </tr>
+                                            </TableCell>
+                                            </TableRow>
                                         ))}
-                                    </tbody>
-                                </table>
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </Box>
                         </CardContent>
                     </Card>
@@ -296,36 +397,44 @@ export default function AdminDashboard() {
                     <Card sx={{ mt: 4 }}>
                         <CardHeader title="Recent Posts Report" />
                         <CardContent>
-                            <Box sx={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%' }}>
-                                <thead>
-                                    <tr>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Product ID</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>ISBN</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Title</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Genre</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Author</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Price</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Quantity</th>
-                                    <th style={{ padding: '16px', textAlign: 'left' }}>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <Box sx={{ overflowX: 'auto' }}>
+                            <TableContainer component={Paper}>
+                                <Table>
+                                <TableHead>
+                                    <TableRow>
+                                    <TableCell>Product ID</TableCell>
+                                    <TableCell>ISBN</TableCell>
+                                    <TableCell>Title</TableCell>
+                                    <TableCell>Genre</TableCell>
+                                    <TableCell>Author</TableCell>
+                                    <TableCell>Price</TableCell>
+                                    <TableCell>Quantity</TableCell>
+                                    <TableCell>Post Status</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
                                     {listOfProducts.map((item, index) => (
-                                    <tr key={index}>
-                                        <td style={{ padding: '16px' }}>{item.id}</td>
-                                        <td style={{ padding: '16px' }}>{item.isbn}</td>
-                                        <td style={{ padding: '16px' }}>{item.title}</td>
-                                        <td style={{ padding: '16px' }}>{item.genre}</td>
-                                        <td style={{ padding: '16px' }}>{item.author}</td>
-                                        <td style={{ padding: '16px' }}>${item.price}</td>
-                                        <td style={{ padding: '16px' }}>{item.quantity}</td>
-                                        <td style={{ padding: '16px' }}>{item.sale_completed}</td>
-                                    </tr>
+                                    <TableRow key={index}>
+                                        <TableCell>{item.id}</TableCell>
+                                        <TableCell>{item.isbn}</TableCell>
+                                        <TableCell>{item.title}</TableCell>
+                                        <TableCell>{item.genre}</TableCell>
+                                        <TableCell>{item.author}</TableCell>
+                                        <TableCell>${item.price}</TableCell>
+                                        <TableCell>{item.quantity}</TableCell>
+                                        {/* <TableCell>{item.sale_completed}</TableCell> */}
+                                        <TableCell>
+                                            <IOSSwitch 
+                                                sx={{ m: 1 }} 
+                                                defaultChecked 
+                                                onClick={() => toggleBlockPost(item.id, item.is_blocked)}                                                />
+                                        </TableCell>
+                                    </TableRow>
                                     ))}
-                                </tbody>
-                                </table>
-                            </Box>
+                                </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Box>
                         </CardContent>
                     </Card>
 

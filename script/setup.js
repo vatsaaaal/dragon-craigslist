@@ -104,7 +104,8 @@ async function setupDatabase() {
                     user_id INTEGER REFERENCES "user"(user_id),
                     book_image_url TEXT,
                     date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    sale_completed BOOLEAN DEFAULT FALSE
+                    sale_completed BOOLEAN DEFAULT FALSE,
+                    is_blocked BOOLEAN DEFAULT FALSE
                 );
             `);
       console.log('Created "product" table successfully');
