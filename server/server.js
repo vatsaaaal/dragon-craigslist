@@ -3,46 +3,48 @@ import pkg from "pg";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors";
-import cookieParser from 'cookie-parser'; // Import cookie-parser
-import { config } from "./config.js"; // Import config here
+import cookieParser from "cookie-parser"; 
+import { config } from "./config.js"; 
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import { setupWebSocket } from "./handlers/websocket.js";
 
-
 const { Client } = pkg;
 const app = express();
 const server = http.createServer(app);
-const PORT = 3000;
-app.use(cookieParser());
+const PORT = process.env.PORT || 3000; // Use Render's dynamic port or default to 3000 for local development
 
+// Middleware
+app.use(cookieParser());
+app.use(express.json());
+
+// Socket.IO Setup
 let io = new SocketIOServer(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["https://dragon-craigslist.vercel.app", "http://localhost:5173"], // Allow Vercel frontend and localhost
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
+// CORS setup
 app.use(
   cors({
-    origin: "http://localhost:5173",
-    credentials: true,
+    origin: ["https://dragon-craigslist.vercel.app", "http://localhost:5173"], // Allow Vercel frontend and localhost for testing
+    credentials: true, // Allow cookies and credentials
   })
 );
 
-app.use(express.json());
+app.options("*", cors());
 
+// Initialize PostgreSQL connection
 let client;
 
 async function initializeDatabaseConnection() {
   const dbConfig = {
-    user: config.PG_USER,
-    host: config.PG_HOST,
-    database: config.PG_DATABASE,
-    password: config.PG_PASSWORD,
-    port: config.PG_PORT,
+    connectionString: config.DATABASE_URL || `postgresql://${config.PG_USER}:${config.PG_PASSWORD}@${config.PG_HOST}:${config.PG_PORT}/${config.PG_DATABASE}`, // Use DATABASE_URL in production or build connection string for localhost
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false, // Use SSL in production, no SSL for local dev
   };
 
   client = new Client(dbConfig);
@@ -55,15 +57,17 @@ initializeDatabaseConnection().catch((error) => {
   process.exit(1);
 });
 
+// Routes
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/messages", messageRoutes);
 
-export { client, config }; // Export client and config
-
-// Pass io and client to the WebSocket handler
+// WebSocket setup
 setupWebSocket(io, client);
 
+// Start server
 server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+
+export { client, config };

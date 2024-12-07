@@ -19,7 +19,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/products/all-books"
+          "https://dragon-craigslist.onrender.com/products/all-books"
         );
         if (Array.isArray(response.data)) {
           setBooks(response.data);

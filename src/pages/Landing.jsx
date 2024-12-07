@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { 
     Button, 
     Typography, 
@@ -10,6 +10,30 @@ import PageHeader from '../components/Header';
 import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('https://dragon-craigslist.onrender.com/users', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Response:', data);
+                } else {
+                    console.error('Failed to fetch users:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchUsers();
+    }, []); 
+
     return (
         <Box sx={{ 
             minHeight: '100vh',
@@ -89,7 +113,7 @@ export default function LandingPage() {
                         marginLeft: '50px'
                     }}>
                         <img 
-                            src="/src/assets/bookIllustration.png" 
+                            src="/assets/bookIllustration.png" 
                             alt="Illustration" 
                         />
                     </Box>

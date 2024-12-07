@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -33,22 +33,23 @@ export default function SignIn() {
     event.preventDefault();
     setLoading(true);
     setErrorMessage("");
-
+  
     try {
-      const response = await fetch("http://localhost:3000/users/login", {
+      const response = await fetch("https://dragon-craigslist.onrender.com/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(loginFormData),
-        credentials: "include",
+        credentials: "include", // Include credentials (cookies) in the request
       });
-
+  
       if (response.ok) {
         localStorage.setItem("isLoggedIn", "true");
         navigate("/marketplace");
       } else {
-        setErrorMessage("Invalid email or password. Please try again.");
+        const errorData = await response.json(); // Parse server error response
+        setErrorMessage(errorData.error || "Invalid email or password. Please try again.");
       }
     } catch (error) {
       console.error("Unable to LogIn:", error);
@@ -88,7 +89,7 @@ export default function SignIn() {
           }}
         >
           <img
-            src="/src/assets/drexel.jpg"
+            src="/assets/drexel.jpg"
             alt="Drexel Bridge"
             style={{
               width: "100%",
@@ -135,13 +136,13 @@ export default function SignIn() {
             >
               <Box
                 component="img"
-                src="/src/assets/dragonMascot.png"
+                src="/assets/dragonMascot.png"
                 alt="Dragon Logo"
                 sx={{ width: 120, height: 120, mb: -1 }}
               />
               <Box
                 component="img"
-                src="/src/assets/book.jpg"
+                src="/assets/book.jpg"
                 alt="Dragon Book"
                 sx={{ width: 290, height: 110, mb: 2 }}
               />

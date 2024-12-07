@@ -71,6 +71,7 @@ router.post(
 
 // Get all products
 router.get("/all-books", async (req, res) => {
+  console.log("Received request: ", req);
   try {
     const result = await client.query(`
       SELECT *

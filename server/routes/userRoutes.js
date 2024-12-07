@@ -33,6 +33,7 @@ router.get("/me", getUserIdFromToken, async (req, res) => {
 
 // Create a new user (Registration)
 router.post("/", async (req, res) => {
+  console.log("Registration request received:", req.body);
   const { username, password, first_name, last_name, email, school_name } =
     req.body;
 
@@ -68,6 +69,7 @@ router.post("/", async (req, res) => {
 
 // Login
 router.post("/login", async (req, res) => {
+  console.log("Login request received:", req.body);
   const { email, password } = req.body;
   try {
     const result = await client.query(
@@ -86,9 +88,9 @@ router.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 3600000,
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-origin cookies in production
+      maxAge: 3600000, // 1 hour
     });
     res.status(200).json({ message: "Login successful" });
   } catch (error) {

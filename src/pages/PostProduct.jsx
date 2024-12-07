@@ -36,27 +36,56 @@ function PostProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-
+  
     // Append fields to FormData
     Object.keys(formData).forEach((key) => {
       data.append(key, formData[key]);
     });
-
-    for (let [key, value] of data.entries()) {
-      console.log(key, value);
-    }
-
+  
     try {
-      axios.post("http://localhost:3000/products/add-products", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true, // Include cookies in the request
-      });
-      alert("Product created successfully!");
+      const response = await axios.post(
+        "https://dragon-craigslist.onrender.com/products/add-products",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true, // Include cookies for authentication
+        }
+      );
+  
+      if (response.status === 201 || response.status === 200) {
+        alert("Product created successfully!");
+        console.log("Response:", response.data);
+  
+        // Clear the form after successful submission
+        setFormData({
+          title: "",
+          isbn: "",
+          author: "",
+          genre: "",
+          date_published: "",
+          price: "",
+          condition: "",
+          quantity: 1,
+          description: "",
+          book_image: null,
+        });
+      } else {
+        alert("Failed to create product. Please try again.");
+      }
     } catch (error) {
       console.error("Error creating product:", error);
-      alert("Failed to create product.");
+  
+      if (error.response && error.response.data) {
+        // Display error message from the server
+        alert(`Error: ${error.response.data.error}`);
+      } else {
+        alert("An error occurred. Please try again later.");
+      }
     }
   };
+  
 
   return (
     <Container maxWidth="sm">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -30,7 +30,7 @@ function Registration() {
     setLoading(true);
     setSuccessMessage("");
     setErrorMessage("");
-
+  
     const userData = {
       username: registerFormData.email.split("@")[0],
       password: registerFormData.password,
@@ -39,20 +39,17 @@ function Registration() {
       email: registerFormData.email,
       school_name: "Drexel University",
     };
-
+  
     try {
-      const response = await fetch("http://localhost:3000/users", {
+      const response = await fetch("https://dragon-craigslist.onrender.com/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
       });
-
-      console.log("response: ", response);
-
+  
       if (response.ok) {
-        setLoading(false);
         setSuccessMessage("User registered successfully!");
         setRegisterFormData({
           firstName: "",
@@ -63,7 +60,8 @@ function Registration() {
           verifyPassword: "",
         });
       } else {
-        setErrorMessage("Failed to register user. Please try again.");
+        const errorData = await response.json(); // Parse server error response
+        setErrorMessage(errorData.error || "Failed to register user. Please try again.");
       }
     } catch (error) {
       console.error("Unable to register:", error);
@@ -72,6 +70,7 @@ function Registration() {
       setLoading(false);
     }
   };
+  
 
   const handleChangeInputs = (event) => {
     const { name, value } = event.target;
@@ -110,7 +109,7 @@ function Registration() {
           }}
         >
           <img
-            src="/src/assets/drexel.jpg"
+            src="/assets/drexel.jpg"
             alt="Drexel Bridge"
             style={{
               width: "100%",
@@ -147,13 +146,13 @@ function Registration() {
           >
             <Box
               component="img"
-              src="/src/assets/dragonMascot.png"
+              src="/assets/dragonMascot.png"
               alt="Dragon Logo"
               sx={{ width: 120, height: 120, mb: -1 }}
             />
             <Box
               component="img"
-              src="/src/assets/book.jpg"
+              src="/assets/book.jpg"
               alt="Dragon Logo"
               sx={{ width: 290, height: 110, mb: 2 }}
             />

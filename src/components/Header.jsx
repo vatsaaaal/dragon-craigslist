@@ -37,12 +37,12 @@ function PageHeader() {
             }}
           >
             <img
-              src="/src/assets/dragonMascot.png"
+              src="assets/dragonMascot.png"
               alt="Logo"
               style={{ marginRight: "10px", height: 50, marginBottom: "-16px" }}
             />
             <img
-              src="/src/assets/book.jpg"
+              src="assets/book.jpg"
               alt="Book"
               style={{ marginRight: "10px", height: 50 }}
             />
