@@ -13,30 +13,6 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
-    useEffect(() => {
-      const fetchUsers = async () => {
-          try {
-              const response = await fetch('https://dragon-craigslist.onrender.com/users', {
-                  method: 'GET',
-                  headers: {
-                      'Content-Type': 'application/json',
-                  },
-              });
-
-              if (response.ok) {
-                  const data = await response.json();
-                  console.log('Response:', data);
-              } else {
-                  console.error('Failed to fetch users:', response.statusText);
-              }
-          } catch (error) {
-              console.error('Error fetching users:', error);
-          }
-      };
-
-      fetchUsers();
-  }, []); 
-
   let [isLoading, setLoading] = useState(false);
   let [loginFormData, setLoginFormData] = useState({
     email: "",

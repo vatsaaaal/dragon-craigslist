@@ -1,7 +1,5 @@
 import React from "react";
-import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import "./App.css";
 import ChatList from "./pages/Chat/ChatList";
 import ChatPage from "./pages/Chat/ChatPage";
 import ChatRoom from "./pages/Chat/ChatRoom";

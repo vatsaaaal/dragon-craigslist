@@ -47,7 +47,7 @@ function PostProduct() {
     }
 
     try {
-      axios.post("http://localhost:3000/products/add-products", data, {
+      axios.post("https://dragon-craigslist.onrender.com/products/add-products", data, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true, // Include cookies in the request
       });
