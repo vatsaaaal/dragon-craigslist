@@ -269,7 +269,6 @@ export default function AdminDashboard() {
                             <Box display="flex" justifyContent="space-between" alignItems="center">
                                 <Box>
                                     <Typography variant="body2" color="textSecondary">Number of Users</Typography>
-                                    {/* <Typography variant="h4" fontWeight="bold">${sumOfCost()}</Typography> */}
                                     <Typography variant="h4" fontWeight="bold">{listOfUsers.length}</Typography>
                                     <Typography variant="body2" color="green">+5% Increase Users</Typography>
                                 </Box>
@@ -283,69 +282,90 @@ export default function AdminDashboard() {
                 <Box>
                     <Card sx={{ mt: 4, border: '0.5px solid gray', borderRadius: '20px' }}>
                         <CardHeader title="Inventories Analysis" />
-                        <CardContent>
-                            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
-                                {/* First Parent Box */}
-                                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                    <Box sx={{ height: 300, border: '0.5px solid black' }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 1 }}>
-                                            <Typography variant="h6">Total Sales by Genre</Typography>
-                                            <Typography variant="h6">Total Inventory: ${sumOfCost()}</Typography> 
+                        <CardContent sx={{border: '1px solid red', display: 'flex', padding: 1, borderRadius: '20px'}}>
+                                {/* Left Parent Box */}
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Box sx={{ border: '0.5px solid red' }}>
+                                    <Typography>Product Quantity by Genre</Typography>
+                                    <Box sx={{display: 'flex', justifyContent: "space-between"}}>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Gauge width={150} height={100} value={25} startAngle={-90} endAngle={90} />
+                                            <Typography variant="body1" sx={{ mt: 1 }}>
+                                                Total Fiction Books
+                                            </Typography>
                                         </Box>
-                                        <BarChart
-                                            xAxis={[{ scaleType: 'band', data: ['Fiction', 'Non-Fiction', 'Technology', 'Science', 'Education'] }]}
-                                            series={[{ data: [29.95, 22.0, 15.99, 19.99, 12.5] }]}
-                                            width={700}
-                                            height={250}
-                                        />
-                                    </Box>
-                                    <Box sx={{ display: 'flex', gap: 1, border: '0.5px solid red' }}>
-                                        <Gauge width={150} height={100} value={25} startAngle={-90} endAngle={90} />
-                                        <Gauge width={150} height={100} value={50} startAngle={-90} endAngle={90} />
-                                        <Gauge width={150} height={100} value={70} startAngle={-90} endAngle={90} />
-                                        <Gauge width={150} height={100} value={90} startAngle={-90} endAngle={90} />
-                                    </Box>
-                                </Box>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Gauge width={150} height={100} value={50} startAngle={-90} endAngle={90} />
+                                            <Typography variant="body1" sx={{ mt: 1 }}>
+                                                Total Non-Fiction Books
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Gauge width={150} height={100} value={50} startAngle={-90} endAngle={90} />
+                                            <Typography variant="body1" sx={{ mt: 1 }}>
+                                                Total Technology Books
+                                            </Typography>
+                                        </Box>
 
-                                {/* Second Parent Box */}
-                                <Box sx={{ flex: 1, overflowX: 'auto', gap: 1, border: "1px solid black" }}>
-                                    <TableContainer component={Paper}>
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Product ID</TableCell>
-                                                    <TableCell>ISBN</TableCell>
-                                                    <TableCell>Title</TableCell>
-                                                    <TableCell>Genre</TableCell>
-                                                    <TableCell>Author</TableCell>
-                                                    <TableCell>Price</TableCell>
-                                                    <TableCell>Quantity</TableCell>
-                                                    <TableCell>Post Status</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                            {listOfProducts.map((item, index) => (
-                                                <TableRow key={index}>
-                                                <TableCell>{item.id}</TableCell>
-                                                <TableCell>{item.isbn}</TableCell>
-                                                <TableCell>{item.title}</TableCell>
-                                                <TableCell>{item.genre}</TableCell>
-                                                <TableCell>{item.author}</TableCell>
-                                                <TableCell>${item.price}</TableCell>
-                                                <TableCell>{item.quantity}</TableCell>
-                                                <TableCell>
-                                                    <IOSSwitch
-                                                    sx={{ m: 1 }}
-                                                    defaultChecked
-                                                    onClick={() => toggleBlockPost(item.id, item.is_blocked)}
-                                                    />
-                                                </TableCell>
-                                                </TableRow>
-                                            ))}
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <Gauge width={150} height={100} value={90} startAngle={-90} endAngle={90} />
+                                            <Typography variant="body1" sx={{ mt: 1 }}>
+                                                Total Science Books
+                                            </Typography>
+                                        </Box>
+                                    </Box>
                                 </Box>
+                                <Box sx={{ border: '0.5px solid blue' }}>
+                                    {/* This Typo go all right top */}
+                                    <Typography variant="h6">Total Sales Inventory: ${sumOfCost()}</Typography> 
+                                    <BarChart
+                                        xAxis={[{ scaleType: 'band', data: ['Fiction', 'Non-Fiction', 'Technology', 'Science'] }]}
+                                        series={[{ data: [29.95, 22.0, 15.99, 19.99] }]}
+                                        width={700}
+                                        height={250}
+                                    />
+                                    {/* This Typo go all Left Top  */}
+                                    <Typography sx={{ display: 'flex', alignItems: 'center'}} variant="h6">Total Sales by Genre</Typography>
+                                </Box>
+                            </Box>
+                            {/* Right Parent Box */}
+                            <Box sx={{ flex: 1, overflowX: 'auto', gap: 1, border: "1px solid black" }}>
+                                <TableContainer component={Paper}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Product ID</TableCell>
+                                                <TableCell>ISBN</TableCell>
+                                                <TableCell>Title</TableCell>
+                                                <TableCell>Genre</TableCell>
+                                                <TableCell>Author</TableCell>
+                                                <TableCell>Price</TableCell>
+                                                <TableCell>Quantity</TableCell>
+                                                <TableCell>Post Status</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {listOfProducts.map((item, index) => (
+                                            <TableRow key={index}>
+                                            <TableCell>{item.id}</TableCell>
+                                            <TableCell>{item.isbn}</TableCell>
+                                            <TableCell>{item.title}</TableCell>
+                                            <TableCell>{item.genre}</TableCell>
+                                            <TableCell>{item.author}</TableCell>
+                                            <TableCell>${item.price}</TableCell>
+                                            <TableCell>{item.quantity}</TableCell>
+                                            <TableCell>
+                                                <IOSSwitch
+                                                sx={{ m: 1 }}
+                                                defaultChecked
+                                                onClick={() => toggleBlockPost(item.id, item.is_blocked)}
+                                                />
+                                            </TableCell>
+                                            </TableRow>
+                                        ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </Box>
                         </CardContent>
                     </Card>
