@@ -22,7 +22,8 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
           "https://dragon-craigslist.onrender.com/products/all-books"
         );
         if (Array.isArray(response.data)) {
-          setBooks(response.data);
+          const filteredBooks = response.data.filter((book) => !book.is_blocked);
+          setBooks(filteredBooks);
         } else {
           console.error("Unexpected API response:", response.data);
           setBooks([]);
