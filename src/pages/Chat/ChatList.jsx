@@ -13,10 +13,17 @@ const ChatList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        console.log("Starting fetchProducts...");
+  
         // Fetch user ID
+        console.log("Fetching user ID...");
         const user = await fetchUserId();
+        console.log("User fetched:", user);
+  
         if (user) {
           setCurrentUserId(user.user_id);
+  
+          console.log("Fetching products for user ID:", user.user_id);
   
           // Fetch products associated with the user
           const response = await fetch("https://dragon-craigslist.onrender.com/past_product", {
@@ -27,8 +34,13 @@ const ChatList = () => {
             credentials: "include", // Include credentials (cookies)
           });
   
+          console.log("Fetch response status:", response.status);
+          console.log("Fetch response headers:", response.headers);
+  
           if (response.ok) {
             const data = await response.json(); // Parse the JSON response
+            console.log("Fetch response data:", data);
+  
             if (Array.isArray(data)) {
               setProducts(data); // Set products to state
               sessionStorage.setItem("products", JSON.stringify(data));
@@ -36,13 +48,17 @@ const ChatList = () => {
               console.error("Unexpected response format:", data);
             }
           } else {
-            console.error("Failed to fetch products:", response.statusText);
+            console.error("Failed to fetch products. Status text:", response.statusText);
             setError("Failed to fetch products.");
           }
+        } else {
+          console.warn("No user found. Skipping product fetch.");
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error during fetchProducts:", error);
         setError("Error fetching products.");
+      } finally {
+        console.log("fetchProducts completed.");
       }
     };
   
