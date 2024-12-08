@@ -14,6 +14,18 @@ const ChatRoom = () => {
     }
   };
 
+  // Function to format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-room">
@@ -28,6 +40,15 @@ const ChatRoom = () => {
                   ? currentUsername // Show the current user's username
                   : msg.sender_username // Show the sender's username for received messages
                 }
+                <span
+                  style={{
+                    color: 'gray',
+                    fontStyle: 'italic',
+                    marginLeft: '10px',
+                  }}
+                >
+                  {formatDate(msg.created)}
+                </span>
               </div>
               <div className="message-content">
                 {msg.content}
