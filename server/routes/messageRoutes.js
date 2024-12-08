@@ -21,6 +21,7 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 router.get("/past_product", getUserIdFromToken, async (req, res) => {
+  console.log("Request received:", req);
   const user_id = res.locals.user_id; // Extract user ID from the token
   //const { product_id } = req.query; // Extract product ID from query parameters
 

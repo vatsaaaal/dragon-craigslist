@@ -67,8 +67,10 @@ export const useChat = () => {
 
     console.log('Initializing WebSocket connection...');
     const newSocket = io(SOCKET_SERVER_URL, {
-      query: { userId: currentUserId }, // Pass userId as part of the query
+      query: { userId: currentUserId }, // Include user-specific data if needed
+      transports: ["websocket"], // Enforce WebSocket protocol
     });
+    
     setSocket(newSocket);
 
     // Join the room room_id
