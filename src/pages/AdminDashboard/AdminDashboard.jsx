@@ -380,7 +380,7 @@ export default function AdminDashboard() {
                                             <TableCell>
                                                 <IOSSwitch
                                                 sx={{ m: 1 }}
-                                                defaultChecked
+                                                checked={item.is_blocked} 
                                                 onClick={() => toggleBlockPost(item.id, item.is_blocked)}
                                                 />
                                             </TableCell>
@@ -468,18 +468,20 @@ export default function AdminDashboard() {
                                                 </Button>
 
                                                 <Dialog open={openModal} onClose={onCancel}>
-                                                <DialogTitle>Block User: {user.first_name}?</DialogTitle>
+                                                <DialogTitle>
+                                                    {user.is_blocked ? `Reactivate User: ${user.username} ?` : `Block User: ${user.username}?`}
+                                                </DialogTitle>
                                                 <DialogContent>
-                                                    The User Account will be disabled from the system.
+                                                    {user.is_blocked ? "The User account will be active from the system." : "The User account will be disabled from the system"}
                                                 </DialogContent>
                                                 <DialogActions>
                                                     <Button onClick={onCancel}>Cancel</Button>
                                                     <Button
-                                                    variant="contained"
-                                                    color="error"
-                                                    onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)}
+                                                        variant="contained"
+                                                        color={user.is_blocked ? "success" : "error"}
+                                                        onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)}
                                                     >
-                                                    Block Account
+                                                        {user.is_blocked ? "Reactivate Account" : "Block Account"}
                                                     </Button>
                                                 </DialogActions>
                                                 </Dialog>
