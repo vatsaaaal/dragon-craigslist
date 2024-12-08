@@ -469,10 +469,10 @@ export default function AdminDashboard() {
 
                                                 <Dialog open={openModal} onClose={onCancel}>
                                                 <DialogTitle>
-                                                    {user.is_blocked ? `Reactivate User: ${user.username} ?` : `Block User: ${user.username}?`}
+                                                    {user.is_blocked ? `Reactivate Account: ${user.username} ?` : `Deactivate User: ${user.username}?`}
                                                 </DialogTitle>
                                                 <DialogContent>
-                                                    {user.is_blocked ? "The User account will be active from the system." : "The User account will be disabled from the system"}
+                                                    {user.is_blocked ? "Enabling this account will restore full system access for the user." : "Disabling this account will block the user from accessing the system."}
                                                 </DialogContent>
                                                 <DialogActions>
                                                     <Button onClick={onCancel}>Cancel</Button>
