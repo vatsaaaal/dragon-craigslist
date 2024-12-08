@@ -77,7 +77,7 @@ function EditProduct() {
     });
 
     try {
-      await axios.put(`https://dragon-craigslist.onrender.com//products/${id}`, data, {
+      await axios.put(`https://dragon-craigslist.onrender.com/products/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
