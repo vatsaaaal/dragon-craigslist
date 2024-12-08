@@ -97,20 +97,13 @@ const ChatRoom = () => {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box
-        sx={{
-          mt: 13,
-          minHeight: "100vh",
-          position: "relative",
-          overflow: "hidden",
-          width: "100%",
-        }}
-      >
+    <Container maxWidth="lg">
+      <Box sx={{ mt: 13, width: "100%" }}>
         <PageHeader />
-        {productDetails ? (
-          <Card sx={{ mb: 4, p: 2, boxShadow: 3 }}>
-            <CardContent>
+        <div className="main-container">
+          {/* Product Details Section */}
+          {productDetails ? (
+            <div className="product-details">
               <Typography variant="h5" component="div" gutterBottom>
                 {productDetails.title}
               </Typography>
@@ -123,59 +116,66 @@ const ChatRoom = () => {
               <Typography variant="body2" color="text.primary">
                 <strong>Seller:</strong> {productDetails.user_id}
               </Typography>
-            </CardContent>
-          </Card>
-        ) : (
-          <Typography variant="body1" align="center" color="error">
-            Product details not available.
-          </Typography>
-        )}
-        <div className="chat-container">
-          <div className="chat-room">
-            <div className="messages">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message ${
-                    msg.sender_id === currentUserId ? 'message-own' : 'message-other'
-                  }`}
-                >
-                  <div className="message-header" data-sender-id={msg.sender_id}>
-                    {msg.sender_id === currentUserId
-                      ? currentUsername // Show the current user's username
-                      : msg.sender_username // Show the sender's username for received messages
-                    }
-                    <span
-                      style={{
-                        color: 'gray',
-                        fontStyle: 'italic',
-                        marginLeft: '10px',
-                      }}
-                    >
-                      {formatDate(msg.created)}
-                    </span>
-                  </div>
-                  <div className="message-content">
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
             </div>
-            <div className="message-input">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSendMessage();
-                  }
-                }}
-              />
-              <button onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
-                Send
-              </button>
+          ) : (
+            <Typography variant="body1" align="center" color="error">
+              Product details not available.
+            </Typography>
+          )}
+  
+          {/* Chat Container Section */}
+          <div className="chat-container">
+            <div className="chat-room">
+              <div className="messages">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`message ${
+                      msg.sender_id === currentUserId
+                        ? "message-own"
+                        : "message-other"
+                    }`}
+                  >
+                    <div
+                      className="message-header"
+                      data-sender-id={msg.sender_id}
+                    >
+                      {msg.sender_id === currentUserId
+                        ? currentUsername
+                        : msg.sender_username}
+                      <span
+                        style={{
+                          color: "gray",
+                          fontStyle: "italic",
+                          marginLeft: "10px",
+                        }}
+                      >
+                        {formatDate(msg.created)}
+                      </span>
+                    </div>
+                    <div className="message-content">{msg.content}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="message-input">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type a message"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={newMessage.trim() === ""}
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
