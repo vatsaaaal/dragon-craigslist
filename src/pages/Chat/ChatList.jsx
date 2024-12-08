@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchUserId } from "../../hooks/useFetchUserId";
 import { Link, useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
 import "./ChatList.css";
 import PageHeader from "../../components/Header";
 

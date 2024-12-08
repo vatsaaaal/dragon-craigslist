@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
 import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 import PageHeader from "../../components/Header";
