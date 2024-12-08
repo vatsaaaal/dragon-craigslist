@@ -79,7 +79,7 @@ export const useChat = () => {
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
       console.log('Received message:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      // setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     // Clean up on component unmount or dependency change
