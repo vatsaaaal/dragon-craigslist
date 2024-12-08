@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
+import PageHeader from "../../components/Header";
 
 const ChatRoom = () => {
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
@@ -27,6 +28,17 @@ const ChatRoom = () => {
   };
 
   return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 17,
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <PageHeader />
     <div className="chat-container">
       <div className="chat-room">
         <div className="messages">
@@ -74,6 +86,8 @@ const ChatRoom = () => {
         </div>
       </div>
     </div>
+    </Box>
+    </Container>
   );
 };
 

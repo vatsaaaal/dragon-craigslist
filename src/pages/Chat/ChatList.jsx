@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchUserId } from "../../hooks/useFetchUserId";
 import { Link, useNavigate } from "react-router-dom";
 import "./ChatList.css";
-import PageHeader from "../components/Header";
+import PageHeader from "../../components/Header";
 
 const ChatList = () => {
   const [products, setProducts] = useState([]); // State to store products
