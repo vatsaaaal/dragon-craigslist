@@ -21,6 +21,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
         const response = await axios.get(
           "https://dragon-craigslist.onrender.com/products/all-books"
         );
+        console.log(response.data)
         if (Array.isArray(response.data)) {
           const filteredBooks = response.data.filter((book) => !book.is_blocked);
           setBooks(filteredBooks);
