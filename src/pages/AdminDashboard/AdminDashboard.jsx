@@ -214,7 +214,7 @@ export default function AdminDashboard() {
 
         for (let product of listOfProducts) {
             if (product.genre == String(type)) {
-                totalQuantity += Integer(product.quantity)
+                totalQuantity += parseInt(product.quantity)
             }
         }
         return totalQuantity;
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
 
         for (let product of listOfProducts) {
             if (product.genre == String(type)) {
-                totalCost += Integer(product.price ? product.price : 0)
+                totalCost += parseInt(product.price ? product.price : 0)
             }
         }
         return totalCost;
