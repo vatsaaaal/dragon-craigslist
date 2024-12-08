@@ -26,7 +26,7 @@ const ChatList = () => {
           console.log("Fetching products for user ID:", user.user_id);
   
           // Fetch products associated with the user
-          const response = await fetch("https://dragon-craigslist.onrender.com/past_product", {
+          const response = await fetch("https://dragon-craigslist.onrender.com/messages/past_product", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
