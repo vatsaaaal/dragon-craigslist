@@ -209,6 +209,28 @@ export default function AdminDashboard() {
         return totalCost;
     }
 
+    function numberOfBooksPerGenre(type) {
+        let totalQuantity = 0;
+
+        for (let product of listOfProducts) {
+            if (product.genre == String(type)) {
+                totalQuantity += Integer(product.quantity)
+            }
+        }
+        return totalQuantity;
+    }
+
+    function totalSalesPerGenre(type) {
+        let totalCost = 0;
+
+        for (let product of listOfProducts) {
+            if (product.genre == String(type)) {
+                totalCost += Integer(product.price ? product.price : 0)
+            }
+        }
+        return totalCost;
+    }
+
     const handleConfirmationModal = (userId) => {
         setSelectedUserId(userId);
         setOpenModal(true);
@@ -289,28 +311,28 @@ export default function AdminDashboard() {
                                     <Typography>Product Quantity by Genre</Typography>
                                     <Box sx={{display: 'flex', justifyContent: "space-between"}}>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Gauge width={150} height={100} value={25} startAngle={-90} endAngle={90} />
+                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre("Fiction")} startAngle={-90} endAngle={90} />
                                             <Typography variant="body1" sx={{ mt: 1 }}>
                                                 Total Fiction Books
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Gauge width={150} height={100} value={50} startAngle={-90} endAngle={90} />
+                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre('Dystopian')} startAngle={-90} endAngle={90} />
                                             <Typography variant="body1" sx={{ mt: 1 }}>
-                                                Total Non-Fiction Books
+                                                Total Dystopian Books
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Gauge width={150} height={100} value={50} startAngle={-90} endAngle={90} />
+                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre('Science')} startAngle={-90} endAngle={90} />
                                             <Typography variant="body1" sx={{ mt: 1 }}>
-                                                Total Technology Books
+                                                Total Science Books
                                             </Typography>
                                         </Box>
 
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Gauge width={150} height={100} value={90} startAngle={-90} endAngle={90} />
+                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre('Classic')} startAngle={-90} endAngle={90} />
                                             <Typography variant="body1" sx={{ mt: 1 }}>
-                                                Total Science Books
+                                                Total Classic Books
                                             </Typography>
                                         </Box>
                                     </Box>
@@ -319,8 +341,8 @@ export default function AdminDashboard() {
                                     {/* This Typo go all right top */}
                                     <Typography variant="h6">Total Sales Inventory: ${sumOfCost()}</Typography> 
                                     <BarChart
-                                        xAxis={[{ scaleType: 'band', data: ['Fiction', 'Non-Fiction', 'Technology', 'Science'] }]}
-                                        series={[{ data: [29.95, 22.0, 15.99, 19.99] }]}
+                                        xAxis={[{ scaleType: 'band', data: ['Fiction', 'Non-Fiction', 'Dystopian', 'Science', 'Classic', 'Technology'] }]}
+                                        series={[{ data: [totalSalesPerGenre('Fiction'), totalSalesPerGenre('Non-Fiction'), totalSalesPerGenre('Dystopian'), totalSalesPerGenre('Science'), totalSalesPerGenre('Classic'), totalSalesPerGenre('Technology')] }]}
                                         width={700}
                                         height={250}
                                     />
