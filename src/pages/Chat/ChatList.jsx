@@ -14,28 +14,39 @@ const ChatList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        // Fetch user ID
         const user = await fetchUserId();
         if (user) {
           setCurrentUserId(user.user_id);
-
+  
           // Fetch products associated with the user
-          const response = await axios.get(`https://dragon-craigslist.onrender.com/past_product`, {
-            withCredentials: true,
+          const response = await fetch("https://dragon-craigslist.onrender.com/past_product", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Include credentials (cookies)
           });
-
-          if (response.data && Array.isArray(response.data)) {
-            setProducts(response.data);
-            sessionStorage.setItem("products", JSON.stringify(response.data));
+  
+          if (response.ok) {
+            const data = await response.json(); // Parse the JSON response
+            if (Array.isArray(data)) {
+              setProducts(data); // Set products to state
+              sessionStorage.setItem("products", JSON.stringify(data));
+            } else {
+              console.error("Unexpected response format:", data);
+            }
           } else {
-            console.error("Failed to retrieve products from server");
+            console.error("Failed to fetch products:", response.statusText);
+            setError("Failed to fetch products.");
           }
         }
       } catch (error) {
-        setError("Error fetching products.");
         console.error("Error fetching products:", error);
+        setError("Error fetching products.");
       }
     };
-
+  
     fetchProducts();
   }, []);
 
