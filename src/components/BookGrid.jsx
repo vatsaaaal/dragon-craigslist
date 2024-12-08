@@ -19,10 +19,12 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/products/all-books"
+          "https://dragon-craigslist.onrender.com/products/all-books"
         );
+        console.log(response.data)
         if (Array.isArray(response.data)) {
-          setBooks(response.data);
+          const filteredBooks = response.data.filter((book) => !book.is_blocked);
+          setBooks(filteredBooks);
         } else {
           console.error("Unexpected API response:", response.data);
           setBooks([]);
@@ -89,7 +91,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`/assets/${book.book_image_url}`}
+                  image={`${book.book_image_url}`}
                   alt={book.title}
                   sx={{ objectFit: "contain", padding: "10px" }}
                 />

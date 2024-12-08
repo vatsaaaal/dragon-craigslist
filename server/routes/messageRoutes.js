@@ -21,6 +21,7 @@ router.post("/", getUserIdFromToken, async (req, res) => {
 });
 
 router.get("/past_product", getUserIdFromToken, async (req, res) => {
+  console.log("Request received:", req);
   const user_id = res.locals.user_id; // Extract user ID from the token
   //const { product_id } = req.query; // Extract product ID from query parameters
 
@@ -28,6 +29,9 @@ router.get("/past_product", getUserIdFromToken, async (req, res) => {
     const result = await client.query(
       `SELECT DISTINCT
         p.id AS product_id,
+        p.title AS product_title,
+        p.genre AS product_genre,
+        p.price AS product_price,
         seller.user_id AS seller_id,
         seller.username AS seller_username,
         buyer.user_id AS buyer_id,

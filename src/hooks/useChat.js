@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const SOCKET_SERVER_URL = 'http://localhost:3000';
+const SOCKET_SERVER_URL = 'https://dragon-craigslist.onrender.com';
 
 export const useChat = () => {
   const [messages, setMessages] = useState([]);
@@ -14,7 +14,7 @@ export const useChat = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.get('http://localhost:3000/users/me', {
+        const response = await axios.get('https://dragon-craigslist.onrender.com/users/me', {
           withCredentials: true,
         });
 
@@ -40,7 +40,7 @@ export const useChat = () => {
 
     const fetchHistoricalMessages = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/messages/past_messages/${bookId}`, {
+        const response = await axios.get(`https://dragon-craigslist.onrender.com/messages/past_messages/${bookId}`, {
           params: { other_user_id: otherUserId },
           withCredentials: true,
         });
@@ -67,8 +67,10 @@ export const useChat = () => {
 
     console.log('Initializing WebSocket connection...');
     const newSocket = io(SOCKET_SERVER_URL, {
-      query: { userId: currentUserId }, // Pass userId as part of the query
+      query: { userId: currentUserId }, // Include user-specific data if needed
+      transports: ["websocket"], // Enforce WebSocket protocol
     });
+    
     setSocket(newSocket);
 
     // Join the room room_id
@@ -77,7 +79,7 @@ export const useChat = () => {
     // Listen for incoming messages
     newSocket.on('receive_message', (message) => {
       console.log('Received message:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);
+      // setMessages((prevMessages) => [...prevMessages, message]);
     });
 
     // Clean up on component unmount or dependency change
@@ -103,12 +105,15 @@ export const useChat = () => {
 
     const sellerId = bookInfo?.sellerId;
 
+    const currentDateTime = new Date().toISOString();
+
     const message = {
       content,
       sender_id: currentUserId,
       receiver_id: sellerId,
       room_id: bookId,
-      sender_username: currentUsername
+      sender_username: currentUsername,
+      created: currentDateTime,
     };
 
     // Send the message through WebSocket
@@ -117,7 +122,7 @@ export const useChat = () => {
     // Optionally store the message on the server
     try {
       const response = await axios.post(
-        'http://localhost:3000/messages/',
+        'https://dragon-craigslist.onrender.com/messages/',
         message,
         { withCredentials: true }
       );
@@ -130,6 +135,8 @@ export const useChat = () => {
     } catch (error) {
       console.error('Error storing message:', error.message);
     }
+
+    setMessages((prevMessages) => [...prevMessages, message]);
   };
 
   return { messages, sendMessage };

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { fetchUserId } from "../../hooks/useFetchUserId";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
+import Box from "@mui/material/Box";
 import "./ChatList.css";
+import PageHeader from "../../components/Header";
 
 const ChatList = () => {
   const [products, setProducts] = useState([]); // State to store products
@@ -14,28 +16,49 @@ const ChatList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+  
         const user = await fetchUserId();
+  
         if (user) {
           setCurrentUserId(user.user_id);
-
+  
           // Fetch products associated with the user
-          const response = await axios.get(`http://localhost:3000/messages/past_product`, {
-            withCredentials: true,
+          const response = await fetch("https://dragon-craigslist.onrender.com/messages/past_product", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Include credentials (cookies)
           });
-
-          if (response.data && Array.isArray(response.data)) {
-            setProducts(response.data);
-            sessionStorage.setItem("products", JSON.stringify(response.data));
+  
+          console.log("Fetch response status:", response.status);
+          console.log("Fetch response headers:", response.headers);
+  
+          if (response.ok) {
+            const data = await response.json(); // Parse the JSON response
+            console.log("Fetch response data:", data);
+  
+            if (Array.isArray(data)) {
+              setProducts(data); // Set products to state
+              sessionStorage.setItem("products", JSON.stringify(data));
+            } else {
+              console.error("Unexpected response format:", data);
+            }
           } else {
-            console.error("Failed to retrieve products from server");
+            console.error("Failed to fetch products. Status text:", response.statusText);
+            setError("Failed to fetch products.");
           }
+        } else {
+          console.warn("No user found. Skipping product fetch.");
         }
       } catch (error) {
+        console.error("Error during fetchProducts:", error);
         setError("Error fetching products.");
-        console.error("Error fetching products:", error);
+      } finally {
+        console.log("fetchProducts completed.");
       }
     };
-
+  
     fetchProducts();
   }, []);
 
@@ -61,6 +84,17 @@ const ChatList = () => {
 
 
   return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 13,
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <PageHeader />
     <div className="chat-list-container">
       <h3>Products Interested In</h3>
       {error && <p className="error-message">{error}</p>}
@@ -68,7 +102,9 @@ const ChatList = () => {
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.product_id} className="product-card">
-              <h4>Product ID: {product.product_id}</h4>
+              <h4>Product Name: {product.product_title}</h4>
+              <p>Price: ${product.product_price}</p>
+              <p>Genre: {product.product_genre}</p>
               <p>Seller: {product.seller_username}</p>
               <p>Buyer: {product.buyer_username}</p>
               <button
@@ -84,6 +120,8 @@ const ChatList = () => {
         )}
       </div>
     </div>
+    </Box>
+    </Container>
   );
 };
 

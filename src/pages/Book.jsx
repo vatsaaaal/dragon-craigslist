@@ -14,6 +14,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
+import PageHeader from "../components/Header";
 
 function Book() {
   const { id } = useParams();
@@ -29,7 +30,7 @@ function Book() {
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/products/${id}`,
+          `https://dragon-craigslist.onrender.com/products/${id}`,
           {
             withCredentials: true,
           }
@@ -60,7 +61,7 @@ function Book() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3000/products/${id}`, {
+      await axios.delete(`https://dragon-craigslist.onrender.com/products/${id}`, {
         withCredentials: true,
       });
       setMessage("Product deleted successfully!");
@@ -122,7 +123,17 @@ function Book() {
   }
 
   return (
-    <Container>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 17,
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <PageHeader />
       <Card
         sx={{
           maxWidth: 600,
@@ -196,6 +207,7 @@ function Book() {
           </Alert>
         </Snackbar>
       )}
+      </Box>
     </Container>
   );
 }
