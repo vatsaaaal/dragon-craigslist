@@ -37,9 +37,11 @@ const ChatRoom = () => {
 
   // Fetch product details when component mounts
   useEffect(() => {
+    const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
+    const bookId = bookInfo?.bookId;
     const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(`https://dragon-craigslist.onrender.com/products/${product_id}`);
+        const response = await axios.get(`https://dragon-craigslist.onrender.com/products/${bookId}`);
         setProductDetails(response.data.product);
         setLoading(false);
       } catch (error) {
@@ -48,10 +50,10 @@ const ChatRoom = () => {
       }
     };
 
-    if (product_id) {
+    if (bookId) {
       fetchProductDetails();
     }
-  }, [product_id]);
+  }, [bookId]);
 
   return (
     <Container maxWidth="sm">
