@@ -113,7 +113,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         const fetchListOfUsers = async () => {
             try {
-                let response = await axios.get("https://localhost:3000/admin/all-users");
+                let response = await axios.get("https://dragon-craigslist.onrender.com/admin/all-users");
                 console.log("response users: ", response);
                 if (!response.status === 200) {
                     throw new Error(`HTTP response error! status: ${response.status}`)
