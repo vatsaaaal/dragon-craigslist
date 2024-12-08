@@ -103,7 +103,7 @@ const ChatList = () => {
           products.map((product) => (
             <div key={product.product_id} className="product-card">
               <h4>Product Name: {product.product_title}</h4>
-              <p>Price: {product.product_price}</p>
+              <p>Price: ${product.product_price}</p>
               <p>Genre: {product.product_genre}</p>
               <p>Seller: {product.seller_username}</p>
               <p>Buyer: {product.buyer_username}</p>
