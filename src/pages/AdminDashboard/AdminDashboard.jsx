@@ -380,7 +380,7 @@ export default function AdminDashboard() {
                                             <TableCell>
                                                 <IOSSwitch
                                                 sx={{ m: 1 }}
-                                                checked={item.is_blocked} 
+                                                checked={!item.is_blocked} 
                                                 onClick={() => toggleBlockPost(item.id, item.is_blocked)}
                                                 />
                                             </TableCell>
