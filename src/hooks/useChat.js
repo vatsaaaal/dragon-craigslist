@@ -105,12 +105,15 @@ export const useChat = () => {
 
     const sellerId = bookInfo?.sellerId;
 
+    const currentDateTime = new Date().toISOString();
+
     const message = {
       content,
       sender_id: currentUserId,
       receiver_id: sellerId,
       room_id: bookId,
-      sender_username: currentUsername
+      sender_username: currentUsername,
+      created: currentDateTime,
     };
 
     // Send the message through WebSocket
@@ -132,6 +135,8 @@ export const useChat = () => {
     } catch (error) {
       console.error('Error storing message:', error.message);
     }
+
+    setMessages((prevMessages) => [...prevMessages, message]);
   };
 
   return { messages, sendMessage };

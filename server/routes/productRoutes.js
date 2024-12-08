@@ -41,7 +41,9 @@ router.post(
     } = req.body;
 
     const user_id = res.locals.user_id; // Extract user ID from middleware
-    const book_image_url = req.file ? `${req.file.filename}` : null; // Get file URL
+    const book_image_url = req.file
+  ? `${req.protocol}://${req.get("host")}/assets/${req.file.filename}`
+  : null; // Get file URL
 
     try {
       const result = await client.query(
@@ -127,7 +129,9 @@ router.put(
       quantity,
       description,
     } = req.body;
-    const book_image_url = req.file ? `${req.file.filename}` : null; // Get file URL if provided
+    const book_image_url = req.file
+  ? `${req.protocol}://${req.get("host")}/assets/${req.file.filename}`
+  : null; // Get file URL if provided
 
     try {
       const fieldsToUpdate = [

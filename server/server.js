@@ -10,11 +10,15 @@ import productRoutes from "./routes/productRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import { setupWebSocket } from "./handlers/websocket.js";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const { Client } = pkg;
 const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 3000; // Use Render's dynamic port or default to 3000 for local development
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cookieParser());
@@ -36,6 +40,8 @@ app.use(
     credentials: true, // Allow cookies and credentials
   })
 );
+
+app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
 
 app.options("*", cors());
 
@@ -63,6 +69,7 @@ app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/messages", messageRoutes);
 app.use("/admin", adminRoutes);
+
 
 // WebSocket setup
 setupWebSocket(io, client);
