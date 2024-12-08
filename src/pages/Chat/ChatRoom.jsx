@@ -14,6 +14,7 @@ const ChatRoom = () => {
   const { messages, sendMessage, currentUserId, currentUsername } = useChat(product_id, other_user_id);
   const [productDetails, setProductDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
