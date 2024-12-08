@@ -87,7 +87,7 @@ const ChatList = () => {
     <Container maxWidth="sm">
       <Box
         sx={{
-          mt: 17,
+          mt: 13,
           minHeight: "100vh",
           position: "relative",
           overflow: "hidden",

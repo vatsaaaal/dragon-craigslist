@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 import PageHeader from "../../components/Header";
-import axios from 'axios';
 
 const ChatRoom = () => {
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
@@ -15,6 +15,7 @@ const ChatRoom = () => {
   const [productDetails, setProductDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
@@ -37,29 +38,69 @@ const ChatRoom = () => {
 
   // Fetch product details when component mounts
   useEffect(() => {
-    const bookInfo = JSON.parse(sessionStorage.getItem('bookInfo'));
-    const bookId = bookInfo?.bookId;
     const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(`https://dragon-craigslist.onrender.com/products/${bookId}`);
+        const response = await axios.get(
+          `https://dragon-craigslist.onrender.com/products/${product_id}`,
+          { withCredentials: true }
+        );
         setProductDetails(response.data.product);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching product details:', error);
+        setError('Failed to load product details.');
         setLoading(false);
       }
     };
 
-    if (bookId) {
+    if (product_id) {
       fetchProductDetails();
+    } else {
+      setError('Invalid product ID.');
+      setLoading(false);
     }
-  }, [bookId]);
+  }, [product_id]);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+        }}
+      >
+        <Typography variant="body1" align="center">
+          Loading product details...
+        </Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "50vh",
+          textAlign: "center",
+        }}
+      >
+        <Typography variant="body1" align="center" color="error">
+          {error}
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Container maxWidth="sm">
       <Box
         sx={{
-          mt: 17,
+          mt: 13,
           minHeight: "100vh",
           position: "relative",
           overflow: "hidden",
@@ -67,80 +108,78 @@ const ChatRoom = () => {
         }}
       >
         <PageHeader />
-        {loading ? (
-  <Typography variant="body1" align="center">
-    Loading product details...
-  </Typography>
-) : productDetails ? (
-  <Card sx={{ mb: 4, p: 2, boxShadow: 3 }}>
-    <CardContent>
-      <Typography variant="h5" component="div" gutterBottom>
-        {productDetails.name}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" gutterBottom>
-        {productDetails.description}
-      </Typography>
-      <Typography variant="body2" color="text.primary">
-        <strong>Price:</strong> ${productDetails.price}
-      </Typography>
-      <Typography variant="body2" color="text.primary">
-        <strong>Seller:</strong> {productDetails.seller_username}
-      </Typography>
-    </CardContent>
-  </Card>
-) : (
-  <Typography variant="body1" align="center" color="error">
-    Product details not available.
-  </Typography>
-)}
-    <div className="chat-container">
-      <div className="chat-room">
-        <div className="messages">
-          {messages.map((msg, index) => (
-            <div 
-              key={index} 
-              className={`message ${msg.sender_id === currentUserId ? 'message-own' : 'message-other'}`}
-            >
-              <div className="message-header" data-sender-id={msg.sender_id}>
-                {msg.sender_id === currentUserId
-                  ? currentUsername // Show the current user's username
-                  : msg.sender_username // Show the sender's username for received messages
-                }
-                <span
-                  style={{
-                    color: 'gray',
-                    fontStyle: 'italic',
-                    marginLeft: '10px',
-                  }}
+        {productDetails ? (
+          <Card sx={{ mb: 4, p: 2, boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h5" component="div" gutterBottom>
+                {productDetails.title}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" gutterBottom>
+                {productDetails.description}
+              </Typography>
+              <Typography variant="body2" color="text.primary">
+                <strong>Price:</strong> ${productDetails.price}
+              </Typography>
+              <Typography variant="body2" color="text.primary">
+                <strong>Seller:</strong> {productDetails.user_id}
+              </Typography>
+            </CardContent>
+          </Card>
+        ) : (
+          <Typography variant="body1" align="center" color="error">
+            Product details not available.
+          </Typography>
+        )}
+        <div className="chat-container">
+          <div className="chat-room">
+            <div className="messages">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`message ${
+                    msg.sender_id === currentUserId ? 'message-own' : 'message-other'
+                  }`}
                 >
-                  {formatDate(msg.created)}
-                </span>
-              </div>
-              <div className="message-content">
-                {msg.content}
-              </div>
+                  <div className="message-header" data-sender-id={msg.sender_id}>
+                    {msg.sender_id === currentUserId
+                      ? currentUsername // Show the current user's username
+                      : msg.sender_username // Show the sender's username for received messages
+                    }
+                    <span
+                      style={{
+                        color: 'gray',
+                        fontStyle: 'italic',
+                        marginLeft: '10px',
+                      }}
+                    >
+                      {formatDate(msg.created)}
+                    </span>
+                  </div>
+                  <div className="message-content">
+                    {msg.content}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="message-input">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSendMessage();
+                  }
+                }}
+              />
+              <button onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
+                Send
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="message-input">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleSendMessage();
-              }
-            }}
-          />
-          <button onClick={handleSendMessage} disabled={newMessage.trim() === ''}>
-            Send
-          </button>
-        </div>
-      </div>
-    </div>
-    </Box>
+      </Box>
     </Container>
   );
 };

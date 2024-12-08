@@ -122,7 +122,17 @@ function Book() {
   }
 
   return (
-    <Container>
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 17,
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <PageHeader />
       <Card
         sx={{
           maxWidth: 600,
@@ -196,6 +206,7 @@ function Book() {
           </Alert>
         </Snackbar>
       )}
+      </Box>
     </Container>
   );
 }
