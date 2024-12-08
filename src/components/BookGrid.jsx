@@ -91,7 +91,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`/assets/${book.book_image_url}`}
+                  image={`${book.book_image_url}`}
                   alt={book.title}
                   sx={{ objectFit: "contain", padding: "10px" }}
                 />

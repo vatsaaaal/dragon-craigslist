@@ -41,8 +41,6 @@ app.use(
   })
 );
 
-app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
-
 app.options("*", cors());
 
 // Initialize PostgreSQL connection
