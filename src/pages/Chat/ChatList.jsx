@@ -3,6 +3,7 @@ import { fetchUserId } from "../../hooks/useFetchUserId";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./ChatList.css";
+import PageHeader from "../components/Header";
 
 const ChatList = () => {
   const [products, setProducts] = useState([]); // State to store products
@@ -61,6 +62,17 @@ const ChatList = () => {
 
 
   return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          mt: 17,
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+          width: "100%",
+        }}
+      >
+        <PageHeader />
     <div className="chat-list-container">
       <h3>Products Interested In</h3>
       {error && <p className="error-message">{error}</p>}
@@ -84,6 +96,8 @@ const ChatList = () => {
         )}
       </div>
     </div>
+    </Box>
+    </Container>
   );
 };
 
