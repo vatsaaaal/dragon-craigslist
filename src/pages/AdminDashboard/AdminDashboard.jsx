@@ -29,6 +29,7 @@ import { Gauge } from '@mui/x-charts/Gauge';
 
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
+import PhoneIcon from '@mui/icons-material/Phone';
 
 const cardStyle = {
     borderRadius: '20px',
@@ -203,7 +204,7 @@ export default function AdminDashboard() {
     function sumOfCost() {
         let totalCost = 0
         for (let i=0; i < listOfProducts.length; i++) {
-            let currentCost = Number(listOfProducts[i].price);
+            let currentCost = Number(listOfProducts[i].price) * Number(listOfProducts[i].quantity);
             totalCost += currentCost
         }
         return totalCost;
@@ -225,7 +226,7 @@ export default function AdminDashboard() {
 
         for (let product of listOfProducts) {
             if (product.genre == String(type)) {
-                totalCost += parseInt(product.price ? product.price : 0)
+                totalCost += parseInt(product.price ? (product.price * product.quantity)  : 0)
             }
         }
         return totalCost;
@@ -421,8 +422,8 @@ export default function AdminDashboard() {
                                                     <Box
                                                         sx={{
                                                         display: 'flex',
-                                                        alignItems: 'center', // Vertically center the content
-                                                        justifyContent: 'center', // Horizontally center the content
+                                                        alignItems: 'center', 
+                                                        justifyContent: 'center', 
                                                         gap: 1,
                                                         }}
                                                     >
@@ -434,7 +435,17 @@ export default function AdminDashboard() {
                                                 </TableCell>
                                                 <TableCell sx={{textAlign: 'center'}}>{user.username}</TableCell>
                                                 <TableCell sx={{textAlign: 'center'}}>{user.password}</TableCell>
-                                                <TableCell sx={{textAlign: 'center'}}>{user.phone}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>
+                                                    <Box sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center', 
+                                                        justifyContent: 'center', 
+                                                        gap: 1,
+                                                        }}>
+                                                            <PhoneIcon /> 
+                                                            {user.phone}
+                                                    </Box>
+                                                </TableCell>
                                                 <TableCell sx={{textAlign: 'center'}}>{user.created_at}</TableCell>
                                             <TableCell sx={{textAlign: 'center'}}>
                                                 {user.is_blocked ? (
