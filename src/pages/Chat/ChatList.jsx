@@ -16,17 +16,11 @@ const ChatList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        console.log("Starting fetchProducts...");
   
-        // Fetch user ID
-        console.log("Fetching user ID...");
         const user = await fetchUserId();
-        console.log("User fetched:", user);
   
         if (user) {
           setCurrentUserId(user.user_id);
-  
-          console.log("Fetching products for user ID:", user.user_id);
   
           // Fetch products associated with the user
           const response = await fetch("https://dragon-craigslist.onrender.com/messages/past_product", {
@@ -108,7 +102,9 @@ const ChatList = () => {
         {products.length > 0 ? (
           products.map((product) => (
             <div key={product.product_id} className="product-card">
-              <h4>Product ID: {product.product_id}</h4>
+              <h4>Product Name: {product.product_name}</h4>
+              <p>Price: {product.product_price}</p>
+              <p>Genre: {product.product_genre}</p>
               <p>Seller: {product.seller_username}</p>
               <p>Buyer: {product.buyer_username}</p>
               <button

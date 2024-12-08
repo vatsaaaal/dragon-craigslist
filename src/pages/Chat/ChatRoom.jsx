@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
 import { useParams } from 'react-router-dom';
 import { useChat } from '../../hooks/useChat';
 import PageHeader from "../../components/Header";
+import axios from 'axios';
 
 const ChatRoom = () => {
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
   const { messages, sendMessage, currentUserId, currentUsername } = useChat(product_id, other_user_id);
+  const [productDetails, setProductDetails] = useState(null);
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = () => {
@@ -29,6 +34,24 @@ const ChatRoom = () => {
     });
   };
 
+  // Fetch product details when component mounts
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      try {
+        const response = await axios.get(`https://dragon-craigslist.onrender.com/products/${product_id}`);
+        setProductDetails(response.data.product);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        setLoading(false);
+      }
+    };
+
+    if (product_id) {
+      fetchProductDetails();
+    }
+  }, [product_id]);
+
   return (
     <Container maxWidth="sm">
       <Box
@@ -41,6 +64,32 @@ const ChatRoom = () => {
         }}
       >
         <PageHeader />
+        {loading ? (
+  <Typography variant="body1" align="center">
+    Loading product details...
+  </Typography>
+) : productDetails ? (
+  <Card sx={{ mb: 4, p: 2, boxShadow: 3 }}>
+    <CardContent>
+      <Typography variant="h5" component="div" gutterBottom>
+        {productDetails.name}
+      </Typography>
+      <Typography variant="body1" color="text.secondary" gutterBottom>
+        {productDetails.description}
+      </Typography>
+      <Typography variant="body2" color="text.primary">
+        <strong>Price:</strong> ${productDetails.price}
+      </Typography>
+      <Typography variant="body2" color="text.primary">
+        <strong>Seller:</strong> {productDetails.seller_username}
+      </Typography>
+    </CardContent>
+  </Card>
+) : (
+  <Typography variant="body1" align="center" color="error">
+    Product details not available.
+  </Typography>
+)}
     <div className="chat-container">
       <div className="chat-room">
         <div className="messages">
