@@ -52,51 +52,51 @@ const contentStyle = {
 
 const IOSSwitch = styled((props) => (
     <Switch disableRipple focusVisibleClassName=".Mui-focusVisible" {...props} />
-  ))(({ theme }) => ({
-    width: 42,
-    height: 26,
-    padding: 0,
-    '& .MuiSwitch-switchBase': {
-      padding: 0,
-      margin: 2,
-      transitionDuration: '300ms',
-      '&.Mui-checked': {
-        transform: 'translateX(16px)',
-        color: '#fff',
-        '& + .MuiSwitch-track': {
-          backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
-          opacity: 1,
-          border: 0,
+    ))(({ theme }) => ({
+        width: 42,
+        height: 26,
+        padding: 0,
+        '& .MuiSwitch-switchBase': {
+        padding: 0,
+        margin: 2,
+        transitionDuration: '300ms',
+        '&.Mui-checked': {
+            transform: 'translateX(16px)',
+            color: '#fff',
+            '& + .MuiSwitch-track': {
+            backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+            opacity: 1,
+            border: 0,
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+            opacity: 0.5,
+            },
+        },
+        '&.Mui-focusVisible .MuiSwitch-thumb': {
+            color: '#33cf4d',
+            border: '6px solid #fff',
+        },
+        '&.Mui-disabled .MuiSwitch-thumb': {
+            color: theme.palette.mode === 'dark' ? theme.palette.grey[600] : theme.palette.grey[100],
         },
         '&.Mui-disabled + .MuiSwitch-track': {
-          opacity: 0.5,
+            opacity: theme.palette.mode === 'dark' ? 0.3 : 0.7,
         },
-      },
-      '&.Mui-focusVisible .MuiSwitch-thumb': {
-        color: '#33cf4d',
-        border: '6px solid #fff',
-      },
-      '&.Mui-disabled .MuiSwitch-thumb': {
-        color: theme.palette.mode === 'dark' ? theme.palette.grey[600] : theme.palette.grey[100],
-      },
-      '&.Mui-disabled + .MuiSwitch-track': {
-        opacity: theme.palette.mode === 'dark' ? 0.3 : 0.7,
-      },
-    },
-    '& .MuiSwitch-thumb': {
-      boxSizing: 'border-box',
-      width: 22,
-      height: 22,
-    },
-    '& .MuiSwitch-track': {
-      borderRadius: 13,
-      backgroundColor: theme.palette.mode === 'dark' ? '#39393D' : '#E9E9EA',
-      opacity: 1,
-      transition: theme.transitions.create(['background-color'], {
-        duration: 500,
-      }),
-    },
-  }));
+        },
+        '& .MuiSwitch-thumb': {
+        boxSizing: 'border-box',
+        width: 22,
+        height: 22,
+        },
+        '& .MuiSwitch-track': {
+        borderRadius: 13,
+        backgroundColor: theme.palette.mode === 'dark' ? '#39393D' : '#E9E9EA',
+        opacity: 1,
+        transition: theme.transitions.create(['background-color'], {
+            duration: 500,
+        }),
+        },
+}));
 
 
 
@@ -149,6 +149,7 @@ export default function AdminDashboard() {
 
     // Handle Deactivate Users
     const toggleBlockUser = async (userId, currentStatus) => {
+        console.log("userId: ", userId);
         try {
             const response = await axios.put(`${API_URL}/admin/block-user/${userId}`, {
                 is_blocked: !currentStatus,
@@ -208,7 +209,7 @@ export default function AdminDashboard() {
             let currentCost = Number(listOfProducts[i].price) * Number(listOfProducts[i].quantity);
             totalCost += currentCost
         }
-        return totalCost;
+        return totalCost.toFixed(2);
     }
 
     function numberOfBooksPerGenre(type) {
@@ -241,6 +242,35 @@ export default function AdminDashboard() {
     const onCancel = () => {
         setOpenModal(false);
     }
+
+    const getUsernameById = (id) => {
+        const user = listOfUsers.find((u) => u.user_id === id);
+        return user ? user.username : "User Null"; 
+    };
+
+    const getUserById = (id) => {
+        return listOfUsers.find((u) => u.user_id === id) || null;
+    };
+
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+    
+        const day = date.getDate();
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
+            'September', 'October', 'November', 'December'
+        ];
+        const month = monthNames[date.getMonth()]; // Get full month name
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+    
+        const time = `${hours}:${minutes}:${seconds}`;
+    
+        return `${day} ${month} ${year} ${time}`;
+    };
+    
 
     return (
         <Box p={1}>
@@ -304,13 +334,13 @@ export default function AdminDashboard() {
             
                 {/* Bar Chart */}
                 <Box>
-                    <Card sx={{ mt: 4, border: '0.5px solid gray', borderRadius: '20px' }}>
+                    <Card sx={{ mt: 4, border: '1px solid black', borderRadius: '20px' }}>
                         <CardHeader title="Inventories Analysis" />
-                        <CardContent sx={{border: '1px solid red', display: 'flex', padding: 1, borderRadius: '20px'}}>
+                        <CardContent sx={{display: 'flex', padding: 1, borderRadius: '20px'}}>
                                 {/* Left Parent Box */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                <Box sx={{ border: '0.5px solid red' }}>
-                                    <Typography>Product Quantity by Genre</Typography>
+                                <Box sx={{ textAlign: 'center' }}>
+                                    <Typography variant="h6" sx={{fontWeight: 'bold'}}>Product Quantity by Genre</Typography>
                                     <Box sx={{display: 'flex', justifyContent: "space-between"}}>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                             <Gauge width={150} height={100} value={numberOfBooksPerGenre("Fiction")} startAngle={-90} endAngle={90} />
@@ -319,7 +349,7 @@ export default function AdminDashboard() {
                                             </Typography>
                                         </Box>
                                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre('Dystopian')} startAngle={-90} endAngle={90} />
+                                            <Gauge width={150} height={100} value={numberOfBooksPerGenre('Dystopian')} startAngle={-90} endAngle={90}  />
                                             <Typography variant="body1" sx={{ mt: 1 }}>
                                                 Total Dystopian Books
                                             </Typography>
@@ -339,9 +369,9 @@ export default function AdminDashboard() {
                                         </Box>
                                     </Box>
                                 </Box>
-                                <Box sx={{ border: '0.5px solid blue' }}>
+                                <Box sx={{textAlign: 'center'}}>
                                     {/* This Typo go all right top */}
-                                    <Typography variant="h6">Total Sales Inventory: ${sumOfCost()}</Typography> 
+                                    <Typography variant="h6" sx={{fontWeight: 'bold'}}>Total Sales Inventory: ${sumOfCost()}</Typography> 
                                     <BarChart
                                         xAxis={[{ scaleType: 'band', data: ['Fiction', 'Non-Fiction', 'Dystopian', 'Science', 'Classic', 'Technology'] }]}
                                         series={[{ data: [totalSalesPerGenre('Fiction'), totalSalesPerGenre('Non-Fiction'), totalSalesPerGenre('Dystopian'), totalSalesPerGenre('Science'), totalSalesPerGenre('Classic'), totalSalesPerGenre('Technology')] }]}
@@ -349,42 +379,63 @@ export default function AdminDashboard() {
                                         height={250}
                                     />
                                     {/* This Typo go all Left Top  */}
-                                    <Typography sx={{ display: 'flex', alignItems: 'center'}} variant="h6">Total Sales by Genre</Typography>
+                                    <Typography sx={{fontWeight: 'bold'}} variant="h6">Total Sales by Genre</Typography>
                                 </Box>
                             </Box>
                             {/* Right Parent Box */}
-                            <Box sx={{ flex: 1, overflowX: 'auto', gap: 1, border: "1px solid black" }}>
+                            <Box sx={{ flex: 1, overflowX: 'auto', gap: 1 }}>
                                 <TableContainer component={Paper}>
                                     <Table>
                                         <TableHead>
-                                            <TableRow>
-                                                <TableCell>Product ID</TableCell>
-                                                <TableCell>ISBN</TableCell>
-                                                <TableCell>Title</TableCell>
-                                                <TableCell>Genre</TableCell>
-                                                <TableCell>Author</TableCell>
-                                                <TableCell>Price</TableCell>
-                                                <TableCell>Quantity</TableCell>
-                                                <TableCell>Post Status</TableCell>
-                                            </TableRow>
+                                        <TableRow>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>ID</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>ISBN</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>Book Title</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>Genre</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>Author</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>Price</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>Quantity</TableCell>
+                                            <TableCell align="center" style={{ fontWeight: 'bold' }}>
+                                                Status
+                                            </TableCell>
+                                        </TableRow>
                                         </TableHead>
                                         <TableBody>
                                         {listOfProducts.map((item, index) => (
                                             <TableRow key={index}>
-                                            <TableCell>{item.id}</TableCell>
+                                            <TableCell>#{item.id}</TableCell>
                                             <TableCell>{item.isbn}</TableCell>
                                             <TableCell>{item.title}</TableCell>
                                             <TableCell>{item.genre}</TableCell>
                                             <TableCell>{item.author}</TableCell>
                                             <TableCell>${item.price}</TableCell>
-                                            <TableCell>{item.quantity}</TableCell>
-                                            <TableCell>
+                                            <TableCell align="center">{item.quantity}</TableCell>
+                                            <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <Typography 
+                                                    variant="body1" 
+                                                    sx={{ 
+                                                        fontWeight: 'bold',
+                                                    color: item.is_blocked ? 'red' : 'text.secondary'
+                                                    }}
+                                                >
+                                                    Off
+                                                </Typography>
                                                 <IOSSwitch
-                                                sx={{ m: 1 }}
-                                                checked={item.is_blocked} 
-                                                onClick={() => toggleBlockPost(item.id, item.is_blocked)}
+                                                    sx={{ m: 1 }}
+                                                    checked={!item.is_blocked} 
+                                                    onClick={() => toggleBlockPost(item.id, item.is_blocked)}
                                                 />
+                                                <Typography 
+                                                    variant="body1" 
+                                                    sx={{ 
+                                                        fontWeight: 'bold',
+                                                    color: item.is_blocked ? 'text.secondary'  : 'green' 
+                                                    }}
+                                                >
+                                                    On
+                                                </Typography>
                                             </TableCell>
+
                                             </TableRow>
                                         ))}
                                         </TableBody>
@@ -394,7 +445,7 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
 
-                    <Card sx={{mt: 4}}>
+                    <Card sx={{mt: 4, border: '1px solid black', borderRadius: '20px'}}>
                         <CardHeader title="Users Management" />
                         <CardContent>
                             <Box sx={{ overflowX: 'auto' }}>
@@ -408,16 +459,15 @@ export default function AdminDashboard() {
                                                 <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Password</TableCell>
                                                 <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Phone Number</TableCell>
                                                 <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Create Date</TableCell>
-                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}} >User Status</TableCell>
-                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Block Users</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}} >Status</TableCell>
+                                                <TableCell sx={{fontWeight: 'bold', textAlign: 'center'}}>Action</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                         {listOfUsers.map((user) => (
                                             <TableRow key={user.user_id}>
-                                            
                                                 <TableCell sx={{textAlign: 'center'}}>
-                                                    {user.user_id}
+                                                    #{user.user_id}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Box
@@ -447,7 +497,7 @@ export default function AdminDashboard() {
                                                             {user.phone}
                                                     </Box>
                                                 </TableCell>
-                                                <TableCell sx={{textAlign: 'center'}}>{user.created_at}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{formatDate(user.created_at)}</TableCell>
                                             <TableCell sx={{textAlign: 'center'}}>
                                                 {user.is_blocked ? (
                                                 <CancelRoundedIcon sx={{ color: 'red' }} />
@@ -455,36 +505,43 @@ export default function AdminDashboard() {
                                                 <CheckCircleRoundedIcon sx={{ color: 'green' }} />
                                                 )}
                                             </TableCell>
-                                            <TableCell sx={{textAlign: 'center'}}>
+                                            <TableCell sx={{ textAlign: 'center' }}>
                                                 <Button
-                                                type="button"
-                                                onClick={() => handleConfirmationModal(user.user_id)}
-                                                sx={{
+                                                    type="button"
+                                                    onClick={() => handleConfirmationModal(user.user_id)}
+                                                    sx={{
                                                     color: 'black',
                                                     borderRadius: '5px',
-                                                    border: '0.5px solid gray'
-                                                }}
+                                                    border: '0.5px solid gray',
+                                                    width: '120px',
+                                                    whiteSpace: 'nowrap',
+                                                    }}
                                                 >
-                                                {user.is_blocked? "Reactivate": "Block"}
+                                                    {user.is_blocked ? "Reactivate" : "Block"}
                                                 </Button>
 
                                                 <Dialog open={openModal} onClose={onCancel}>
-                                                <DialogTitle>
-                                                    {user.is_blocked ? `Reactivate Account: ${user.username} ?` : `Deactivate User: ${user.username}?`}
-                                                </DialogTitle>
-                                                <DialogContent>
-                                                    {user.is_blocked ? "Enabling this account will restore full system access for the user." : "Disabling this account will block the user from accessing the system."}
-                                                </DialogContent>
-                                                <DialogActions>
+                                                    <DialogTitle>
+                                                    {/* Find the user by selectedUserId */}
+                                                    {getUserById(selectedUserId)?.is_blocked
+                                                        ? `Reactivate Account: ${getUsernameById(selectedUserId)}?`
+                                                        : `Deactivate User: ${getUsernameById(selectedUserId)}?`}
+                                                    </DialogTitle>
+                                                    <DialogContent>
+                                                    {getUserById(selectedUserId)?.is_blocked
+                                                        ? "Enabling this account will restore full system access for the user."
+                                                        : "Disabling this account will block the user from accessing the system."}
+                                                    </DialogContent>
+                                                    <DialogActions>
                                                     <Button onClick={onCancel}>Cancel</Button>
                                                     <Button
                                                         variant="contained"
-                                                        color={user.is_blocked ? "success" : "error"}
-                                                        onClick={() => toggleBlockUser(selectedUserId, user.is_blocked)}
+                                                        color={getUserById(selectedUserId)?.is_blocked ? "success" : "error"}
+                                                        onClick={() => toggleBlockUser(selectedUserId, getUserById(selectedUserId)?.is_blocked)}
                                                     >
-                                                        {user.is_blocked ? "Reactivate Account" : "Block Account"}
+                                                        {getUserById(selectedUserId)?.is_blocked ? "Reactivate Account" : "Block Account"}
                                                     </Button>
-                                                </DialogActions>
+                                                    </DialogActions>
                                                 </Dialog>
                                             </TableCell>
                                             </TableRow>
@@ -492,34 +549,6 @@ export default function AdminDashboard() {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                </Box>
-
-                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <Card sx={{ mt: 4 }}>
-                        <CardHeader title="New Accounts Report" />
-                        <CardContent>
-                            <Box sx={{ overflowX: 'auto' }}>
-                                <table style={{ width: '100%' }}>
-                                    <thead>
-                                        <tr>
-                                            <th style={{ padding: '16px', textAlign: 'left' }}>User IDs</th>
-                                            <th style={{ padding: '16px', textAlign: 'left' }}>Username</th>
-                                            <th style={{ padding: '16px', textAlign: 'left' }}>Email</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {listOfNewAccounts.map((item, index) => (
-                                        <tr key={item.user_id}> 
-                                            <td style={{ padding: '16px' }}>{item.user_id}</td>
-                                            <td style={{ padding: '16px' }}>{item.username}</td>
-                                            <td style={{ padding: '16px' }}>{item.email}</td>
-                                        </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
                             </Box>
                         </CardContent>
                     </Card>
