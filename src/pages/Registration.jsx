@@ -11,8 +11,10 @@ import {
   Alert,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Registration() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   let [registerFormData, setRegisterFormData] = useState({
     firstName: "",
     lastName: "",
@@ -24,6 +26,7 @@ function Registration() {
   const [isLoading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleRegistrationSubmit = async (event) => {
     event.preventDefault();
@@ -41,7 +44,7 @@ function Registration() {
     };
   
     try {
-      const response = await fetch("https://dragon-craigslist.onrender.com/users", {
+      const response = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,6 +62,7 @@ function Registration() {
           password: "",
           verifyPassword: "",
         });
+        navigate("/login")
       } else {
         const errorData = await response.json(); // Parse server error response
         setErrorMessage(errorData.error || "Failed to register user. Please try again.");

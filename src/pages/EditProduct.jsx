@@ -14,6 +14,7 @@ import axios from "axios";
 import PageHeader from "../components/Header";
 
 function EditProduct() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ function EditProduct() {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `https://dragon-craigslist.onrender.com/products/${id}`,
+          `${API_URL}/products/${id}`,
           {
             withCredentials: true,
           }
@@ -77,7 +78,7 @@ function EditProduct() {
     });
 
     try {
-      await axios.put(`https://dragon-craigslist.onrender.com/products/${id}`, data, {
+      await axios.put(`${API_URL}/products/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });

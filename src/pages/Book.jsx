@@ -17,6 +17,7 @@ import {
 import PageHeader from "../components/Header";
 
 function Book() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const { id } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState(null);
@@ -30,7 +31,7 @@ function Book() {
     const fetchBookDetails = async () => {
       try {
         const response = await axios.get(
-          `https://dragon-craigslist.onrender.com/products/${id}`,
+          `${API_URL}/products/${id}`,
           {
             withCredentials: true,
           }
@@ -61,7 +62,7 @@ function Book() {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://dragon-craigslist.onrender.com/products/${id}`, {
+      await axios.delete(`${API_URL}/products/${id}`, {
         withCredentials: true,
       });
       setMessage("Product deleted successfully!");

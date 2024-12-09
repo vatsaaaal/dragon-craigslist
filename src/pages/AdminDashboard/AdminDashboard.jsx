@@ -102,6 +102,7 @@ const IOSSwitch = styled((props) => (
 
 
 export default function AdminDashboard() {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
     const [listOfUsers, setListOfUsers] = useState([]);
     const [listOfProducts, setListOfProducts] = useState([]);
     const [listOfNewAccounts, setListOfNewAccounts] = useState([]);
@@ -114,7 +115,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         const fetchListOfUsers = async () => {
             try {
-                let response = await axios.get("https://dragon-craigslist.onrender.com/admin/all-users");
+                let response = await axios.get(`${API_URL}/admin/all-users`);
                 console.log("response users: ", response);
                 if (!response.status === 200) {
                     throw new Error(`HTTP response error! status: ${response.status}`)
@@ -131,7 +132,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         const fetchListOfProducts = async () => {
             try {
-                let response = await axios.get("https://dragon-craigslist.onrender.com/admin/all-products");
+                let response = await axios.get(`${API_URL}/admin/all-products`);
                 console.log("response products: ", response)
                 if (!response.status === 200) {
                     throw new Error(`HTTP response error! status: ${response.status}`)
@@ -149,7 +150,7 @@ export default function AdminDashboard() {
     // Handle Deactivate Users
     const toggleBlockUser = async (userId, currentStatus) => {
         try {
-            const response = await axios.put(`https://dragon-craigslist.onrender.com/admin/block-user/${userId}`, {
+            const response = await axios.put(`${API_URL}/admin/block-user/${userId}`, {
                 is_blocked: !currentStatus,
             });
             const updatedUser = response.data;
@@ -168,7 +169,7 @@ export default function AdminDashboard() {
 
     const toggleBlockPost = async (postId, currentStatus) => {
         try {
-            const response = await axios.put(`https://dragon-craigslist.onrender.com/admin/block-post/${postId}`, {
+            const response = await axios.put(`${API_URL}/admin/block-post/${postId}`, {
                 is_blocked: !currentStatus,
             });
             const updatedPost = response.data;
