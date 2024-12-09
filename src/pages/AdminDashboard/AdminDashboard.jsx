@@ -252,6 +252,26 @@ export default function AdminDashboard() {
         return listOfUsers.find((u) => u.user_id === id) || null;
     };
 
+    const formatDate = (isoString) => {
+        const date = new Date(isoString);
+    
+        const day = date.getDate();
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
+            'September', 'October', 'November', 'December'
+        ];
+        const month = monthNames[date.getMonth()]; // Get full month name
+        const year = date.getFullYear();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+    
+        const time = `${hours}:${minutes}:${seconds}`;
+    
+        return `${day} ${month} ${year} ${time}`;
+    };
+    
+
     return (
         <Box p={1}>
             <PageHeader />
@@ -316,7 +336,7 @@ export default function AdminDashboard() {
                 <Box>
                     <Card sx={{ mt: 4, border: '1px solid black', borderRadius: '20px' }}>
                         <CardHeader title="Inventories Analysis" />
-                        <CardContent sx={{border: '1px solid gray', display: 'flex', padding: 1, borderRadius: '20px'}}>
+                        <CardContent sx={{display: 'flex', padding: 1, borderRadius: '20px'}}>
                                 {/* Left Parent Box */}
                             <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
                                 <Box sx={{ textAlign: 'center' }}>
@@ -446,9 +466,8 @@ export default function AdminDashboard() {
                                         <TableBody>
                                         {listOfUsers.map((user) => (
                                             <TableRow key={user.user_id}>
-                                            
                                                 <TableCell sx={{textAlign: 'center'}}>
-                                                    {user.user_id}
+                                                    #{user.user_id}
                                                 </TableCell>
                                                 <TableCell>
                                                     <Box
@@ -478,7 +497,7 @@ export default function AdminDashboard() {
                                                             {user.phone}
                                                     </Box>
                                                 </TableCell>
-                                                <TableCell sx={{textAlign: 'center'}}>{user.created_at}</TableCell>
+                                                <TableCell sx={{textAlign: 'center'}}>{formatDate(user.created_at)}</TableCell>
                                             <TableCell sx={{textAlign: 'center'}}>
                                                 {user.is_blocked ? (
                                                 <CancelRoundedIcon sx={{ color: 'red' }} />
