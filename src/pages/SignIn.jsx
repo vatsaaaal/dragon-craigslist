@@ -13,6 +13,7 @@ import {
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   let [isLoading, setLoading] = useState(false);
   let [loginFormData, setLoginFormData] = useState({
     email: "",
@@ -35,7 +36,7 @@ export default function SignIn() {
     setErrorMessage("");
   
     try {
-      const response = await fetch("https://dragon-craigslist.onrender.com/users/login", {
+      const response = await fetch(`${API_URL}/users/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -12,6 +12,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function BookGrid({ searchQuery, sortOption, filterCategory }) {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [books, setBooks] = useState([]);
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ function BookGrid({ searchQuery, sortOption, filterCategory }) {
     const fetchBooks = async () => {
       try {
         const response = await axios.get(
-          "https://dragon-craigslist.onrender.com/products/all-books"
+          `${API_URL}/products/all-books`
         );
         console.log(response.data)
         if (Array.isArray(response.data)) {
