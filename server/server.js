@@ -24,27 +24,20 @@ const __dirname = path.dirname(__filename);
 app.use(cookieParser());
 app.use(express.json());
 
-// Socket.IO Setup
-let io = new SocketIOServer(server, {
-  cors: {
-    origin: ["https://dragon-craigslist.vercel.app"], // Allow Vercel frontend and localhost
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
 // CORS setup
+const allowedOrigins = [
+  "http://localhost:5173", // Local frontend
+  "https://dragon-craigslist.vercel.app", // Production frontend
+];
 app.use(
   cors({
-    origin: ["https://dragon-craigslist.vercel.app"], // Allow Vercel frontend and localhost for testing
+    origin: allowedOrigins,
     credentials: true, // Allow cookies and credentials
   })
 );
 
-
+// Serve static assets
 app.use("/assets", express.static(path.join(__dirname, "../public/assets")));
-
-app.options("*", cors());
 
 // Initialize PostgreSQL connection
 let client;
@@ -71,8 +64,14 @@ app.use("/products", productRoutes);
 app.use("/messages", messageRoutes);
 app.use("/admin", adminRoutes);
 
-
-// WebSocket setup
+// Socket.IO Setup
+let io = new SocketIOServer(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 setupWebSocket(io, client);
 
 // Start server

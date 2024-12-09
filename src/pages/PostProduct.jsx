@@ -11,6 +11,7 @@ import axios from "axios";
 import PageHeader from "../components/Header";
 
 function PostProduct() {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [formData, setFormData] = useState({
     title: "",
     isbn: "",
@@ -44,7 +45,7 @@ function PostProduct() {
   
     try {
       const response = await axios.post(
-        "https://dragon-craigslist.onrender.com/products/add-products",
+        `${API_URL}/products/add-products`,
         data,
         {
           headers: {

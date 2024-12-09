@@ -7,6 +7,7 @@ import "./ChatList.css";
 import PageHeader from "../../components/Header";
 
 const ChatList = () => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [products, setProducts] = useState([]); // State to store products
   const [currentUserId, setCurrentUserId] = useState(null); // State to store the current user ID
   const [error, setError] = useState(null);
@@ -23,7 +24,7 @@ const ChatList = () => {
           setCurrentUserId(user.user_id);
   
           // Fetch products associated with the user
-          const response = await fetch("https://dragon-craigslist.onrender.com/messages/past_product", {
+          const response = await fetch(`${API_URL}/messages/past_product`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

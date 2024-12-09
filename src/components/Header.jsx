@@ -64,12 +64,11 @@ function PageHeader() {
           spacing={3}
           sx={{ display: { xs: "none", md: "flex" } }}
         >
+          <Button component={Link} to="/" color="inherit">Homepage</Button>
           <Button component={Link} to="/marketplace" color="inherit">
             Marketplace
           </Button>
           <Button component={Link} to="/chatbox" color="inherit">ChatBox</Button>
-          <Button color="inherit">Newstand</Button>
-          <Button color="inherit">Features</Button>
           <Button color="inherit" onClick={() => navigate("/admin/dashboard")}>
             Admin
           </Button>

@@ -90,7 +90,8 @@ async function setupDatabase() {
           phone VARCHAR(15),
           phone_visibility BOOLEAN DEFAULT FALSE,
           access_level VARCHAR(10) DEFAULT 'user',
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          is_blocked BOOLEAN DEFAULT FALSE
         );
       `);
       console.log('Created "user" table successfully');
@@ -115,7 +116,8 @@ async function setupDatabase() {
           user_id INTEGER REFERENCES "user"(user_id),
           book_image_url TEXT,
           date_posted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          sale_completed BOOLEAN DEFAULT FALSE
+          sale_completed BOOLEAN DEFAULT FALSE,
+          is_blocked BOOLEAN DEFAULT FALSE
         );
       `);
       console.log('Created "product" table successfully');

@@ -10,6 +10,7 @@ import { useChat } from '../../hooks/useChat';
 import PageHeader from "../../components/Header";
 
 const ChatRoom = () => {
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const { product_id, other_user_id } = useParams(); // Retrieve parameters from URL
   const { messages, sendMessage, currentUserId, currentUsername } = useChat(product_id, other_user_id);
   const [productDetails, setProductDetails] = useState(null);
@@ -41,7 +42,7 @@ const ChatRoom = () => {
     const fetchProductDetails = async () => {
       try {
         const response = await axios.get(
-          `https://dragon-craigslist.onrender.com/products/${product_id}`,
+          `${API_URL}/products/${product_id}`,
           { withCredentials: true }
         );
         setProductDetails(response.data.product);

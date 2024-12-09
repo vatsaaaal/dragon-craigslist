@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
 
-const SOCKET_SERVER_URL = 'https://dragon-craigslist.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const SOCKET_SERVER_URL = `${API_URL}`;
 
 export const useChat = () => {
   const [messages, setMessages] = useState([]);
@@ -14,7 +15,7 @@ export const useChat = () => {
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.get('https://dragon-craigslist.onrender.com/users/me', {
+        const response = await axios.get(`${API_URL}/users/me`, {
           withCredentials: true,
         });
 
@@ -40,7 +41,7 @@ export const useChat = () => {
 
     const fetchHistoricalMessages = async () => {
       try {
-        const response = await axios.get(`https://dragon-craigslist.onrender.com/messages/past_messages/${bookId}`, {
+        const response = await axios.get(`${API_URL}/messages/past_messages/${bookId}`, {
           params: { other_user_id: otherUserId },
           withCredentials: true,
         });
@@ -118,11 +119,12 @@ export const useChat = () => {
 
     // Send the message through WebSocket
     socket.emit('send_message', message);
+    console.log("API_URL:", API_URL)
 
     // Optionally store the message on the server
     try {
       const response = await axios.post(
-        'https://dragon-craigslist.onrender.com/messages/',
+        `${API_URL}/messages/`,
         message,
         { withCredentials: true }
       );

@@ -10,10 +10,11 @@ import PageHeader from '../components/Header';
 import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch('https://dragon-craigslist.onrender.com/users', {
+                const response = await fetch(`${API_URL}/users`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
